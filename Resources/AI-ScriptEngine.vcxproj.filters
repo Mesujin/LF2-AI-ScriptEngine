@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{180e428c-9d5b-4f24-8d63-1ca1d297c3d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AngelScript">
+      <UniqueIdentifier>{65b41387-9650-4dc1-b273-3845f30149b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{4b0248c1-9c45-492b-b1c8-ec362f5bb5e5}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Includes\platform.h">
+      <Filter>Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\AngelScript\angelscript.h">
+      <Filter>AngelScript</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\AngelScript\scriptany.h">
+      <Filter>AngelScript</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\AngelScript\scriptarray.h">
+      <Filter>AngelScript</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\AngelScript\scriptmath.h">
+      <Filter>AngelScript</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\AngelScript\scriptmathcomplex.h">
+      <Filter>AngelScript</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\AngelScript\scriptstdstring.h">
+      <Filter>AngelScript</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\DirectDraw\myIDDraw.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\Detours\detours.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Includes\AngelScript\scriptbuilder.h">
+      <Filter>AngelScript</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Includes\platform.cpp">
+      <Filter>Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Includes\engine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Includes\AngelScript\scriptany.cpp">
+      <Filter>AngelScript</Filter>
+    </ClCompile>
+    <ClCompile Include="Includes\AngelScript\scriptarray.cpp">
+      <Filter>AngelScript</Filter>
+    </ClCompile>
+    <ClCompile Include="Includes\AngelScript\scriptmath.cpp">
+      <Filter>AngelScript</Filter>
+    </ClCompile>
+    <ClCompile Include="Includes\AngelScript\scriptmathcomplex.cpp">
+      <Filter>AngelScript</Filter>
+    </ClCompile>
+    <ClCompile Include="Includes\AngelScript\scriptstdstring.cpp">
+      <Filter>AngelScript</Filter>
+    </ClCompile>
+    <ClCompile Include="Includes\DirectDraw\myIDDrawPalette.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Includes\DirectDraw\myIDDraw7.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Includes\AngelScript\scriptbuilder.cpp">
+      <Filter>AngelScript</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
