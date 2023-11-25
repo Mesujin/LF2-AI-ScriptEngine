@@ -17,6 +17,17 @@
   #define NOHELP     // WinHelp is deprecated.
   #define WIN32_LEAN_AND_MEAN
 
+  // Version Control
+   #define _AISCRIPT_NEWAISCRIPTLANG true
+   #define _AISCRIPT_OLDVANGELSCRIPT false
+   #define _AISCRIPT_NEORACOMPATIBLE false
+   #define _AISCRIPT_FORDARKFIRENEXE false
+   #define _AISCRIPT_MAXOBJECTNUMBER 400i32
+   #define _AISCRIPT_MAXOBJECTFRAMES 400i32
+   #define _AISCRIPT_MAXSTAGESIDSLOT 60i32
+   #define _AISCRIPT_AISCRIPTADDRESS "ai"
+   #define _AISCRIPT_DDRAWDLLVERSION "v2.4" + (_AISCRIPT_OLDVANGELSCRIPT ? "A" : "") + (_AISCRIPT_NEORACOMPATIBLE ? "N" : "") + (_AISCRIPT_FORDARKFIRENEXE ? "N" : "")
+
   #include <windows.h>
   #include <stdlib.h>
   #include <stdio.h>
@@ -51,8 +62,6 @@
   using stream = std::stringstream;  // -
   using insize = size_t;             // Vector's maximum size.
 
-  #define unique std::unique_ptr
-
   #define rint1   static_cast < int1 >
   #define rint8   static_cast < int8 >
   #define rint16  static_cast < int16 >
@@ -76,24 +85,22 @@
   #define univers virtual
   #define stacked inline
   #define perfect noexcept
+  #define typedef typedef
 
- // Global Function
-  int0 G_Error(HRESULT Hres01, statics string Temp01 = "") perfect
+ // Global Structure/Class
+  struct AISCRIPT_VECTOR
   {
-   if(SUCCEEDED(Hres01)) return;
-   if(FACILITY_WINDOWS == HRESULT_FACILITY(Hres01)) Hres01 = HRESULT_CODE(Hres01);
-   
-   string Temp02 = "Exception Occur, Error Code : 0x" + std::format("{:X}", ruint32(Hres01)); if(Temp01 != "") Temp02 += " (" + Temp01 + ")";
-   statics std::wstring Temp03 = L"\n\nWould be helpful if you would inform the developer.";
+   xint64 x, y, z;
 
-   TCHAR* Temp04; std::wstring Temp05;
-   if(FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, Hres01, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&Temp04, 0, NULL) != 0) 
-   {Temp05 = std::wstring(Temp04); Temp05.pop_back(); Temp05.pop_back(); Temp05 = std::wstring(Temp02.begin(), Temp02.end()) + L"\n\"" + Temp05 + L".\"" + Temp03;} else 
-   {Temp05 = std::wstring(Temp02.begin(), Temp02.end()) + Temp03;}
-   
-   MessageBox(NULL, Temp05.c_str(), L"Platform Error", MB_OK | MB_ICONERROR);
-   exit(0);
-  }
+   AISCRIPT_VECTOR()
+   {
+    x = 0.0; y = 0.0; z = 0.0; return;
+   }
+   AISCRIPT_VECTOR(xint64 Vrab01, xint64 Vrab02, xint64 Vrab03)
+   {
+    return;
+   }
+  };
 
  // Engine's Contact
   int0 M_Starting() perfect;

@@ -12,7 +12,7 @@
 #ifndef _DETOURS_H_
 #define _DETOURS_H_
 
-#pragma comment(lib, "detours")
+#pragma comment(lib, "Includes/Detours/detours")
 
 //////////////////////////////////////////////////////////////////////////////
 //

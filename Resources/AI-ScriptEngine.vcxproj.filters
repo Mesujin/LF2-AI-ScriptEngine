@@ -42,6 +42,9 @@
     <ClInclude Include="Includes\AngelScript\scriptbuilder.h">
       <Filter>AngelScript</Filter>
     </ClInclude>
+    <ClInclude Include="Includes\game.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Includes\platform.cpp">
@@ -72,6 +75,9 @@
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="Includes\AngelScript\scriptbuilder.cpp">
+      <Filter>AngelScript</Filter>
+    </ClCompile>
+    <ClCompile Include="Includes\AngelScript\scriptstdstring_utils.cpp">
       <Filter>AngelScript</Filter>
     </ClCompile>
   </ItemGroup>
