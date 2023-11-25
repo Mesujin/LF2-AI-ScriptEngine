@@ -36,6 +36,7 @@
  int32 current_stage;
  int8  stage_clear;
  int8  key_load[7];
+ int8  key_last[_AISCRIPT_MAXOBJECTNUMBER][7];
  AISCRIPT_GAME *game = (AISCRIPT_GAME*)0x458b00;
  AISCRIPT_INFO self;
  AISCRIPT_INFO target;
@@ -134,17 +135,17 @@
  }
 
 // Light Functions
- int0   L_Base(int32 Vrab01)              perfect
+ int0   L_Base(int32 Vrab01, int1 Vrab02 = true)              perfect
  {
   elapsed_time = *(int32*)0x450b8c;
-  difficulty = *(int32*)0x450c30;
-  mode = *(int32*)0x451160;
+  difficulty   = *(int32*)0x450c30;
+  mode         = *(int32*)0x451160;
   if(background != *(int32*)0x44d024)
   {
-   background = *(int32*)0x44d024;
-   bg_width = game->files->backgrounds[background].bg_width;
-   bg_zwidth1 = game->files->backgrounds[background].bg_zwidth1;
-   bg_zwidth2 = game->files->backgrounds[background].bg_zwidth2;
+   background  = *(int32*)0x44d024;
+   bg_width    = game->files->backgrounds[background].bg_width;
+   bg_zwidth1  = game->files->backgrounds[background].bg_zwidth1;
+   bg_zwidth2  = game->files->backgrounds[background].bg_zwidth2;
    stage_bound = bg_width;
    stage_clear = false;
   }
@@ -169,20 +170,58 @@
   key_load[5] = 0;
   key_load[6] = 0;
 
-  if(game->objects[Vrab01]->up != 0) key_load[0] = 1;
-  if(game->objects[Vrab01]->holding_up != 0) key_load[0] = 2;
-  if(game->objects[Vrab01]->left != 0) key_load[1] = 1;
-  if(game->objects[Vrab01]->holding_left != 0) key_load[1] = 2;
-  if(game->objects[Vrab01]->down != 0) key_load[2] = 1;
-  if(game->objects[Vrab01]->holding_down != 0) key_load[2] = 2;
-  if(game->objects[Vrab01]->right != 0) key_load[3] = 1;
-  if(game->objects[Vrab01]->holding_right != 0) key_load[3] = 2;
-  if(game->objects[Vrab01]->A != 0) key_load[4] = 1;
-  if(game->objects[Vrab01]->holding_a != 0) key_load[4] = 2;
-  if(game->objects[Vrab01]->D != 0) key_load[5] = 1;
-  if(game->objects[Vrab01]->holding_d != 0) key_load[5] = 2;
-  if(game->objects[Vrab01]->J != 0) key_load[6] = 1;
-  if(game->objects[Vrab01]->holding_j != 0) key_load[6] = 2;
+  if(Vrab02)
+  {
+   remains uint32 Vrab03[_AISCRIPT_MAXOBJECTNUMBER];
+   if(Vrab03[Vrab01] == elapsed_time - 1)
+   {
+    key_load[0] = key_last[Vrab01][0];
+    key_load[1] = key_last[Vrab01][1];
+    key_load[2] = key_last[Vrab01][2];
+    key_load[3] = key_last[Vrab01][3];
+    key_load[4] = key_last[Vrab01][4];
+    key_load[5] = key_last[Vrab01][5];
+    key_load[6] = key_last[Vrab01][6];
+   }
+
+   Vrab03[Vrab01] = elapsed_time;
+   return;
+  }
+  
+  if(game->objects[Vrab01]->holding_up != 0){key_load[0] = 2;} else
+  {if(game->objects[Vrab01]->up != 0){key_load[0] = 1; game->objects[Vrab01]->up = 0; game->objects[Vrab01]->holding_up = 1;}}
+  if(game->objects[Vrab01]->holding_left != 0){key_load[1] = 2;} else
+  {if(game->objects[Vrab01]->left != 0){key_load[1] = 1; game->objects[Vrab01]->left = 0; game->objects[Vrab01]->holding_left = 1;}}
+  if(game->objects[Vrab01]->holding_down != 0){key_load[2] = 2;} else
+  {if(game->objects[Vrab01]->down != 0){key_load[2] = 1; game->objects[Vrab01]->down = 0; game->objects[Vrab01]->holding_down = 1;}}
+  if(game->objects[Vrab01]->holding_right != 0){key_load[3] = 2;} else
+  {if(game->objects[Vrab01]->right != 0){key_load[3] = 1; game->objects[Vrab01]->right = 0; game->objects[Vrab01]->holding_right = 1;}}
+  if(game->objects[Vrab01]->holding_a != 0){key_load[4] = 2;} else
+  {if(game->objects[Vrab01]->A != 0){key_load[4] = 1; game->objects[Vrab01]->A = 0; game->objects[Vrab01]->holding_a = 1;}}
+  if(game->objects[Vrab01]->holding_d != 0){key_load[5] = 2;} else
+  {if(game->objects[Vrab01]->D != 0){key_load[5] = 1; game->objects[Vrab01]->D = 0; game->objects[Vrab01]->holding_d = 1;}}
+  if(game->objects[Vrab01]->holding_j != 0){key_load[6] = 2;} else
+  {if(game->objects[Vrab01]->J != 0){key_load[6] = 1; game->objects[Vrab01]->J = 0; game->objects[Vrab01]->holding_j = 1;}}
+ }
+ int0   L_Keeping(int32 Vrab01)           perfect
+ {
+  if(Vrab01 < 0 || Vrab01 >= _AISCRIPT_MAXOBJECTNUMBER) return;
+  if(!game->exists[Vrab01]) return;
+ 
+  if(game->objects[Vrab01]->up != 0) key_last[Vrab01][0] = 1;
+  if(game->objects[Vrab01]->holding_up != 0) key_last[Vrab01][0] = 2;
+  if(game->objects[Vrab01]->left != 0) key_last[Vrab01][1] = 1;
+  if(game->objects[Vrab01]->holding_left != 0) key_last[Vrab01][1] = 2;
+  if(game->objects[Vrab01]->down != 0) key_last[Vrab01][2] = 1;
+  if(game->objects[Vrab01]->holding_down != 0) key_last[Vrab01][2] = 2;
+  if(game->objects[Vrab01]->right != 0) key_last[Vrab01][3] = 1;
+  if(game->objects[Vrab01]->holding_right != 0) key_last[Vrab01][3] = 2;
+  if(game->objects[Vrab01]->A != 0) key_last[Vrab01][4] = 1;
+  if(game->objects[Vrab01]->holding_a != 0) key_last[Vrab01][4] = 2;
+  if(game->objects[Vrab01]->D != 0) key_last[Vrab01][5] = 1;
+  if(game->objects[Vrab01]->holding_d != 0) key_last[Vrab01][5] = 2;
+  if(game->objects[Vrab01]->J != 0) key_last[Vrab01][6] = 1;
+  if(game->objects[Vrab01]->holding_j != 0) key_last[Vrab01][6] = 2;
  }
  int0   L_Empty()                         perfect 
  {
@@ -577,7 +616,7 @@
  int32 (__stdcall *D_DetourEGO)(int32 target_num, int32 object_num, int32 x, int32 y, int32 z, int32 a, int32 b);
  int0  D_CallID(int32 object_num, asIScriptFunction *Function)
  {
-  L_Base(object_num); statics string Temp01 = std::to_string(0) + ".as";
+  L_Base(object_num, false); statics string Temp01 = std::to_string(0) + ".as";
 
   if((self = object_num) == -1)
   {
