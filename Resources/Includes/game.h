@@ -14,18 +14,18 @@
  // Structure/Class
   typedef struct AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY
   {
-   int32 dvx;
-   int32 dvy;
-   int32 fall;
-   int32 arest;
-   int32 vrest;
-   int32 respond;
-   int32 effect;
-   int8  unkwn1[20];
-   int32 bdefend;
-   int32 injury;
-   int32 zwidth;
-   int8  unkwn2[20];
+   int32 dvx;        // +0x00 | Value : game.objects[].data.strength.entry[].dvx      / game.files.datas[].strength.entry[].dvx
+   int32 dvy;        // +0x04 | Value : game.objects[].data.strength.entry[].dvy      / game.files.datas[].strength.entry[].dvy
+   int32 fall;       // +0x08 | Value : game.objects[].data.strength.entry[].fall     / game.files.datas[].strength.entry[].fall
+   int32 arest;      // +0x0C | Value : game.objects[].data.strength.entry[].arest    / game.files.datas[].strength.entry[].arest
+   int32 vrest;      // +0x10 | Value : game.objects[].data.strength.entry[].vrest    / game.files.datas[].strength.entry[].vrest
+   int32 respond;    // +0x14 | Value : game.objects[].data.strength.entry[].respond  / game.files.datas[].strength.entry[].respond
+   int32 effect;     // +0x18 | Value : game.objects[].data.strength.entry[].effect   / game.files.datas[].strength.entry[].effect
+   int8  unkwn1[20]; // +0x1C         : game.objects[].data.strength.entry[].unkwn1[] / game.files.datas[].strength.entry[].unkwn1[]
+   int32 bdefend;    // +0x30 | Value : game.objects[].data.strength.entry[].bdefend  / game.files.datas[].strength.entry[].bdefend
+   int32 injury;     // +0x34 | Value : game.objects[].data.strength.entry[].injury   / game.files.datas[].strength.entry[].injury
+   int32 zwidth;     // +0x38 | Value : game.objects[].data.strength.entry[].zwidth   / game.files.datas[].strength.entry[].zwidth
+   int8  unkwn2[20]; // +0x3C         : game.objects[].data.strength.entry[].unkwn2[] / game.files.datas[].strength.entry[].unkwn2[]
   } AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY;
   typedef struct AISCRIPT_GAME_FILE_DATA_STRENGTH
   {
