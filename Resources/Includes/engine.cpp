@@ -977,6 +977,7 @@
   ScriptEngine->RegisterObjectProperty("Object", "const CharArray unkwn8", asOFFSET(AISCRIPT_GAME_OBJECT, unkwn8));
   ScriptEngine->RegisterObjectProperty("Object", "const int32  arest",     asOFFSET(AISCRIPT_GAME_OBJECT, arest));
   ScriptEngine->RegisterObjectProperty("Object", "const CharArray vrests", asOFFSET(AISCRIPT_GAME_OBJECT, vrests));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  vrest",     asOFFSET(AISCRIPT_GAME_OBJECT, vrests));
   ScriptEngine->RegisterObjectProperty("Object", "const int32  attacked_object_num", asOFFSET(AISCRIPT_GAME_OBJECT, attacked_object_num));
   ScriptEngine->RegisterObjectProperty("Object", "const CharArray unkwn9",           asOFFSET(AISCRIPT_GAME_OBJECT, unkwn9));
   ScriptEngine->RegisterObjectProperty("Object", "const int32  clone",               asOFFSET(AISCRIPT_GAME_OBJECT, clone));
