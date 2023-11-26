@@ -1351,18 +1351,19 @@
   ScriptEngine->RegisterGlobalProperty(      "Info target", &target);
   ScriptEngine->RegisterGlobalProperty("const Game game",   game);
 
-  ScriptEngine->RegisterGlobalProperty("const int32 mode",                &mode);
-  ScriptEngine->RegisterGlobalProperty("const int32 difficulty",          &difficulty);
-  ScriptEngine->RegisterGlobalProperty("const int32 elapsed_time",        &elapsed_time);
-  ScriptEngine->RegisterGlobalProperty("const int32 background",          &background);
-  ScriptEngine->RegisterGlobalProperty("const int32 bg_width",            &bg_width);
-  ScriptEngine->RegisterGlobalProperty("const int32 bg_zwidth1",          &bg_zwidth1);
-  ScriptEngine->RegisterGlobalProperty("const int32 bg_zwidth2",          &bg_zwidth2);
-  ScriptEngine->RegisterGlobalProperty("const int32 stage_bound",         &stage_bound);
-  ScriptEngine->RegisterGlobalProperty("const bool  stage_clear",         &stage_clear);
-  ScriptEngine->RegisterGlobalProperty("const int32 current_phase",       &current_phase);
-  ScriptEngine->RegisterGlobalProperty("const int32 current_phase_count", &current_phase_count);
-  ScriptEngine->RegisterGlobalProperty("const int32 current_stage",       &current_stage);
+  ScriptEngine->RegisterGlobalProperty("const int32  mode",                &mode);
+  ScriptEngine->RegisterGlobalProperty("const int32  difficulty",          &difficulty);
+  ScriptEngine->RegisterGlobalProperty("const int32  elapsed_time",        &elapsed_time);
+  ScriptEngine->RegisterGlobalProperty("const int32  background",          &background);
+  ScriptEngine->RegisterGlobalProperty("const int32  bg_width",            &bg_width);
+  ScriptEngine->RegisterGlobalProperty("const int32  bg_zwidth1",          &bg_zwidth1);
+  ScriptEngine->RegisterGlobalProperty("const int32  bg_zwidth2",          &bg_zwidth2);
+  ScriptEngine->RegisterGlobalProperty("const int32  stage_bound",         &stage_bound);
+  ScriptEngine->RegisterGlobalProperty("const bool   stage_clear",         &stage_clear);
+  ScriptEngine->RegisterGlobalProperty("const int32  current_phase",       &current_phase);
+  ScriptEngine->RegisterGlobalProperty("const int32  current_phase_count", &current_phase_count);
+  ScriptEngine->RegisterGlobalProperty("const int32  current_stage",       &current_stage);
+  ScriptEngine->RegisterGlobalProperty("const string version",             &version);
   
   ScriptEngine->RegisterGlobalFunction("void print(bool p)",             asFUNCTIONPR(print, (int1 p),   int0), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void print(int8 p)",             asFUNCTIONPR(print, (int8 p),   int0), asCALL_CDECL);
