@@ -1358,9 +1358,9 @@
   ScriptEngine->RegisterGlobalProperty("const int32 bg_zwidth2",          &bg_zwidth2);
   ScriptEngine->RegisterGlobalProperty("const int32 stage_bound",         &stage_bound);
   ScriptEngine->RegisterGlobalProperty("const bool  stage_clear",         &stage_clear);
-  ScriptEngine->RegisterGlobalProperty("const int32current_phase",       &current_phase);
-  ScriptEngine->RegisterGlobalProperty("const int32current_phase_count", &current_phase_count);
-  ScriptEngine->RegisterGlobalProperty("const int32current_stage",       &current_stage);
+  ScriptEngine->RegisterGlobalProperty("const int32 current_phase",       &current_phase);
+  ScriptEngine->RegisterGlobalProperty("const int32 current_phase_count", &current_phase_count);
+  ScriptEngine->RegisterGlobalProperty("const int32 current_stage",       &current_stage);
   
   ScriptEngine->RegisterGlobalFunction("void print(bool p)",             asFUNCTIONPR(print, (int1 p),   int0), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void print(int8 p)",             asFUNCTIONPR(print, (int8 p),   int0), asCALL_CDECL);
