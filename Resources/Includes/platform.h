@@ -18,14 +18,14 @@
   #define WIN32_LEAN_AND_MEAN
 
   // Version Control
-   #define _AISCRIPT_OLDVANGELSCRIPT false
+   #define _AISCRIPT_NEWAISCRIPTLANG true
    #define _AISCRIPT_NEORACOMPATIBLE false
    #define _AISCRIPT_FORDARKFIRENEXE false
    #define _AISCRIPT_MAXOBJECTNUMBER 400i32
    #define _AISCRIPT_MAXOBJECTFRAMES 400i32
    #define _AISCRIPT_MAXSTAGESIDSLOT 60i32
    #define _AISCRIPT_AISCRIPTADDRESS "ai"
-   #define _AISCRIPT_DDRAWDLLVERSION string("v2.4") + string(_AISCRIPT_OLDVANGELSCRIPT ? "A" : "") + string(_AISCRIPT_NEORACOMPATIBLE ? "N" : "") + string(_AISCRIPT_FORDARKFIRENEXE ? "DF" : "")
+   #define _AISCRIPT_DDRAWDLLVERSION string("v2.4") + string(_AISCRIPT_NEORACOMPATIBLE ? "N" : "") + string(_AISCRIPT_FORDARKFIRENEXE ? "DF" : "")
 
   #include <windows.h>
   #include <stdlib.h>

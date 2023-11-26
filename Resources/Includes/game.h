@@ -322,9 +322,9 @@
    AISCRIPT_GAME_FILE_BACKGROUND_LAYER layer;  // [+0x445] | Struct : game.files.get_backgrounds()[].layer[]
    
    #if _AISCRIPT_FORDARKFIRENEXE
-    int8   layer_ptrs[100];     // +0x96D | Pointer : game.files.get_backgrounds()[].layer_ptrs[]
+    int32  layer_ptrs[100];     // +0x96D | Pointer : game.files.get_backgrounds()[].layer_ptrs[]
    #else
-    int8   layer_ptrs[30];      // +0x96D | Pointer : game.files.get_backgrounds()[].layer_ptrs[]
+    int32  layer_ptrs[30];      // +0x96D | Pointer : game.files.get_backgrounds()[].layer_ptrs[]
    #endif
    int32  ptrs;                 // +0x9E5 | Pointer : game.files.get_backgrounds()[].ptrs
   } AISCRIPT_GAME_FILE_BACKGROUND;
