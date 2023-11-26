@@ -23,21 +23,22 @@
  int0 M_Update(statics int32, statics string) perfect;
 
 // Global Variables
- int1  full_script = false;
- int32 mode;
- int32 difficulty;
- int32 elapsed_time;
- int32 background = -1;
- int32 bg_width;
- int32 bg_zwidth1;
- int32 bg_zwidth2;
- int32 stage_bound;
- int32 current_phase;
- int32 current_phase_count;
- int32 current_stage;
- int8  stage_clear;
- int8  key_load[7];
- int8  key_last[_AISCRIPT_MAXOBJECTNUMBER][7];
+ int1   full_script = false;
+ int32  mode;
+ int32  difficulty;
+ int32  elapsed_time;
+ int32  background = -1;
+ int32  bg_width;
+ int32  bg_zwidth1;
+ int32  bg_zwidth2;
+ int32  stage_bound;
+ int32  current_phase;
+ int32  current_phase_count;
+ int32  current_stage;
+ int8   stage_clear;
+ int8   key_load[7];
+ int8   key_last[_AISCRIPT_MAXOBJECTNUMBER][7];
+ string version = _AISCRIPT_DDRAWDLLVERSION;
  AISCRIPT_GAME *game = (AISCRIPT_GAME*)0x458b00;
  AISCRIPT_INFO self;
  AISCRIPT_INFO target;
