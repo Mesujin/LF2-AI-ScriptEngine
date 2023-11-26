@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////
 // "engine.cpp", main processor of the AI-Scripting.                                      //
 //                                                                                        //
-// Originally written by Doix and Som1Lse.                                                   //
+// Originally written by Doix and Som1Lse.                                                //
 // With enhancement by zort.                                                              //
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -38,6 +38,8 @@
  int8   stage_clear;
  int8   key_load[7];
  int8   key_last[_AISCRIPT_MAXOBJECTNUMBER][7];
+ int32  max_frames = _AISCRIPT_MAXOBJECTFRAMES;
+ int32  max_objnum = _AISCRIPT_MAXOBJECTNUMBER;
  string version = _AISCRIPT_DDRAWDLLVERSION;
  AISCRIPT_GAME *game = (AISCRIPT_GAME*)0x458b00;
  AISCRIPT_INFO self;
@@ -45,6 +47,10 @@
  asIScriptModule  *ScriptModule;
  asIScriptEngine  *ScriptEngine;
  asIScriptContext *ScriptContext;
+
+ #if _AISCRIPT_NEORACOMPATIBLE
+  AISCRIPT_GAMEPTR *gamePtr = (AISCRIPT_GAMEPTR*)0x458b00;
+ #endif
 
  #ifdef AISCRIPT_DEBUG
   #include <map>
@@ -805,7 +811,7 @@
    {
     if(Maps0001[Vrab01] < Time01)
     {
-     Maps0001[Vrab01] = Time01; ScriptEngine->DiscardModule(string(Temp01, 0, Temp01.size() - 3).c_str());
+     ScriptEngine->DiscardModule(string(Temp01, 0, Temp01.size() - 3).c_str());
 	 CScriptBuilder Builder;
      Builder.DefineWord("debug");
 
@@ -821,6 +827,9 @@
       ScriptEngine->DiscardModule(string(Temp01, 0, Temp01.size() - 3).c_str());
       return;
      }
+
+     Maps0001[Vrab01] = Time01;
+
      if(Builder.BuildModule() < 0)
      {
       ScriptEngine->WriteMessage(Temp01.c_str(), 0, 0, asMSGTYPE_ERROR, "Unable to build module.");
@@ -830,7 +839,6 @@
     }
    } else
    {
-	Maps0001.insert(std::pair < int32 , std::time_t > (Vrab01, Time01));
     CScriptBuilder Builder;
     Builder.DefineWord("debug");
 
@@ -846,6 +854,9 @@
      ScriptEngine->DiscardModule(string(Temp01, 0, Temp01.size() - 3).c_str());
      return;
     }
+
+	Maps0001.insert(std::pair < int32 , std::time_t > (Vrab01, Time01));
+
     if(Builder.BuildModule() < 0)
     {
      ScriptEngine->WriteMessage(Temp01.c_str(), 0, 0, asMSGTYPE_ERROR, "Unable to build module.");
@@ -866,6 +877,9 @@
   
   ScriptEngine->RegisterObjectType("Info", 0, asOBJ_REF);
   ScriptEngine->RegisterObjectType("Game", 0, asOBJ_REF | asOBJ_NOCOUNT);
+  #if _AISCRIPT_NEORACOMPATIBLE
+   ScriptEngine->RegisterObjectType("Game2", 0, asOBJ_REF | asOBJ_NOCOUNT);
+  #endif
   
   ScriptEngine->RegisterObjectType("Object",      0, asOBJ_REF | asOBJ_NOCOUNT);
   ScriptEngine->RegisterObjectType("FileManager", 0, asOBJ_REF | asOBJ_NOCOUNT);
@@ -1347,9 +1361,13 @@
   ScriptEngine->RegisterObjectProperty("Info", "int reserve",        asOFFSET(AISCRIPT_INFO, reserve));
   ScriptEngine->RegisterObjectProperty("Info", "DataFile @data",     asOFFSET(AISCRIPT_INFO, data));
 
-  ScriptEngine->RegisterGlobalProperty("const Info self",   &self);
-  ScriptEngine->RegisterGlobalProperty(      "Info target", &target);
-  ScriptEngine->RegisterGlobalProperty("const Game game",   game);
+  ScriptEngine->RegisterGlobalProperty("const Info  self",    &self);
+  ScriptEngine->RegisterGlobalProperty(      "Info  target",  &target);
+  ScriptEngine->RegisterGlobalProperty("const Game  game",    game);
+  #if _AISCRIPT_NEORACOMPATIBLE
+   ScriptEngine->RegisterObjectProperty("Game2", "Game game",  asOFFSET(AISCRIPT_GAMEPTR, game));
+   ScriptEngine->RegisterGlobalProperty("const Game2 gamePtr", gamePtr);
+  #endif
 
   ScriptEngine->RegisterGlobalProperty("const int32  mode",                &mode);
   ScriptEngine->RegisterGlobalProperty("const int32  difficulty",          &difficulty);
@@ -1364,6 +1382,8 @@
   ScriptEngine->RegisterGlobalProperty("const int32  current_phase_count", &current_phase_count);
   ScriptEngine->RegisterGlobalProperty("const int32  current_stage",       &current_stage);
   ScriptEngine->RegisterGlobalProperty("const string version",             &version);
+  ScriptEngine->RegisterGlobalProperty("const int32  maxframes",           &max_frames);
+  ScriptEngine->RegisterGlobalProperty("const int32  maxobjnum",           &max_objnum);
   
   ScriptEngine->RegisterGlobalFunction("void print(bool p)",             asFUNCTIONPR(print, (int1 p),   int0), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void print(int8 p)",             asFUNCTIONPR(print, (int8 p),   int0), asCALL_CDECL);

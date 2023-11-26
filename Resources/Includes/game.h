@@ -12,36 +12,94 @@
   #include "platform.h"
 
  // Structure/Class
-  typedef struct AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY
+  typedef struct AISCRIPT_GAME_FILE_BACKGROUND_LAYER
   {
-   int32 dvx;        // +0x00 | Value : game.objects[].data.strength.entry[].dvx      / game.files.datas[].strength.entry[].dvx
-   int32 dvy;        // +0x04 | Value : game.objects[].data.strength.entry[].dvy      / game.files.datas[].strength.entry[].dvy
-   int32 fall;       // +0x08 | Value : game.objects[].data.strength.entry[].fall     / game.files.datas[].strength.entry[].fall
-   int32 arest;      // +0x0C | Value : game.objects[].data.strength.entry[].arest    / game.files.datas[].strength.entry[].arest
-   int32 vrest;      // +0x10 | Value : game.objects[].data.strength.entry[].vrest    / game.files.datas[].strength.entry[].vrest
-   int32 respond;    // +0x14 | Value : game.objects[].data.strength.entry[].respond  / game.files.datas[].strength.entry[].respond
-   int32 effect;     // +0x18 | Value : game.objects[].data.strength.entry[].effect   / game.files.datas[].strength.entry[].effect
-   int8  unkwn1[20]; // +0x1C         : game.objects[].data.strength.entry[].unkwn1[] / game.files.datas[].strength.entry[].unkwn1[]
-   int32 bdefend;    // +0x30 | Value : game.objects[].data.strength.entry[].bdefend  / game.files.datas[].strength.entry[].bdefend
-   int32 injury;     // +0x34 | Value : game.objects[].data.strength.entry[].injury   / game.files.datas[].strength.entry[].injury
-   int32 zwidth;     // +0x38 | Value : game.objects[].data.strength.entry[].zwidth   / game.files.datas[].strength.entry[].zwidth
-   int8  unkwn2[20]; // +0x3C         : game.objects[].data.strength.entry[].unkwn2[] / game.files.datas[].strength.entry[].unkwn2[]
-  } AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY;
-  typedef struct AISCRIPT_GAME_FILE_DATA_STRENGTH
+   #if _AISCRIPT_FORDARKFIRENEXE
+    int32  transparency[100]; // 0x445 | Value   : game.files.get_backgrounds()[].layer[].transparency
+    int32  width[100];        // 0x4BD | Value   : game.files.get_backgrounds()[].layer[].width
+    int32  x[100];            // 0x535 | Value   : game.files.get_backgrounds()[].layer[].x
+    int32  y[100];            // 0x5AD | Value   : game.files.get_backgrounds()[].layer[].y
+    int32  height[100];       // 0x625 | Value   : game.files.get_backgrounds()[].layer[].height
+    int32  loop[100];         // 0x69D | Value   : game.files.get_backgrounds()[].layer[].loop
+    int32  c1[100];           // 0x715 | Value   : game.files.get_backgrounds()[].layer[].c1
+    int32  c2[100];           // 0x78D | Value   : game.files.get_backgrounds()[].layer[].c2
+    int32  cc[100];           // 0x805 | Value   : game.files.get_backgrounds()[].layer[].cc
+    int32  animation[100];    // 0x87D | Counter : game.files.get_backgrounds()[].layer[].animation
+    int32  rect[100];         // 0x8F5 | Value   : game.files.get_backgrounds()[].layer[].rect
+   #else
+    int32  transparency[30]; // 0x445 | Value   : game.files.get_backgrounds()[].layer[].transparency
+    int32  width[30];        // 0x4BD | Value   : game.files.get_backgrounds()[].layer[].width
+    int32  x[30];            // 0x535 | Value   : game.files.get_backgrounds()[].layer[].x
+    int32  y[30];            // 0x5AD | Value   : game.files.get_backgrounds()[].layer[].y
+    int32  height[30];       // 0x625 | Value   : game.files.get_backgrounds()[].layer[].height
+    int32  loop[30];         // 0x69D | Value   : game.files.get_backgrounds()[].layer[].loop
+    int32  c1[30];           // 0x715 | Value   : game.files.get_backgrounds()[].layer[].c1
+    int32  c2[30];           // 0x78D | Value   : game.files.get_backgrounds()[].layer[].c2
+    int32  cc[30];           // 0x805 | Value   : game.files.get_backgrounds()[].layer[].cc
+    int32  animation[30];    // 0x87D | Counter : game.files.get_backgrounds()[].layer[].animation
+    int32  rect[30];         // 0x8F5 | Value   : game.files.get_backgrounds()[].layer[].rect
+   #endif
+  } AISCRIPT_GAME_FILE_BACKGROUND_LAYER;
+  typedef struct AISCRIPT_GAME_FILE_BACKGROUND
   {
-   AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY entry[9];
+   int32  bg_width;             // +0x000 | Value   : game.files.get_backgrounds()[].bg_width
+   int32  bg_zwidth1;           // +0x004 | Value   : game.files.get_backgrounds()[].bg_zwidth1
+   int32  bg_zwidth2;           // +0x008 | Value   : game.files.get_backgrounds()[].bg_zwidth2
+   int32  perspective1;         // +0x00C | Value   : game.files.get_backgrounds()[].perspective1
+   int32  perspective2;         // +0x010 | Value   : game.files.get_backgrounds()[].perspective2
+   int32  shadow1;              // +0x014 | Value   : game.files.get_backgrounds()[].shadow1
+   int32  shadow2;              // +0x018 | Value   : game.files.get_backgrounds()[].shadow2
+   int32  layer_count;          // +0x01C | Value   : game.files.get_backgrounds()[].layer_count
+   #if _AISCRIPT_FORDARKFIRENEXE
+    int8   layer_bmps[100][30]; // +0x020 | Address : game.files.get_backgrounds()[].layer_bmps[][]
+   #else
+    int8   layer_bmps[30][30];  // +0x020 | Address : game.files.get_backgrounds()[].layer_bmps[][]
+   #endif
+   int8   shadow_bmp[30];       // +0x3A4 | Address : game.files.get_backgrounds()[].shadow_bmp[]
+   int8   unkwn1[10];           // +0x41C           : game.files.get_backgrounds()[].unkwn1[]
+   int8   name[30];             // +0x426 | String  : game.files.get_backgrounds()[].name[]
+   int8   unkwn2;               // +0x444           : game.files.get_backgrounds()[].unkwn2[]
 
-   int8 entry_name[5][30]; // The size was actually [10][30], but considering you'll use "file_Address" or etc, then it supposed to be [5][30].
-   int8 unkwn1[30];
-  } AISCRIPT_GAME_FILE_DATA_STRENGTH;
-  typedef struct AISCRIPT_GAME_FILE_DATA_FILE
+   AISCRIPT_GAME_FILE_BACKGROUND_LAYER layer;  // [+0x445] | Struct : game.files.get_backgrounds()[].layer[]
+   
+   #if _AISCRIPT_FORDARKFIRENEXE
+    int32  layer_ptrs[100];     // +0x96D | Pointer : game.files.get_backgrounds()[].layer_ptrs[]
+   #else
+    int32  layer_ptrs[30];      // +0x96D | Pointer : game.files.get_backgrounds()[].layer_ptrs[]
+   #endif
+   int32  ptrs;                 // +0x9E5 | Pointer : game.files.get_backgrounds()[].ptrs
+  } AISCRIPT_GAME_FILE_BACKGROUND;
+  typedef struct AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN
   {
-   int32 ptr[10];
-   int32 w[10];
-   int32 h[10];
-   int32 row[10];
-   int32 col[10];
-  } AISCRIPT_GAME_FILE_DATA_FILE;
+   int8   unkwn1[172]; // Seems to have something to do with bosses, is changed during game so I believe it keeps track of whether or not soldiers should respawn.
+   int32  id;
+   int32  x;
+   int32  hp;
+   int32  times;
+   int32  reserve;
+   int32  join;
+   int32  join_reserve;
+   int32  act;
+   int32  y;
+   xint64 ratio;
+   int32  role;       // 0 = Normal; 1 = "soldier"; 2 = "boss".
+   int8   unkwn2[4];
+  } AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN;
+  typedef struct AISCRIPT_GAME_FILE_STAGE_PHASE
+  {
+   int32 bound;
+   int8  music[52];
+
+   AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN spawns[60];
+
+   int32 when_clear_goto_phase;
+  } AISCRIPT_GAME_FILE_STAGE_PHASE;
+  typedef struct AISCRIPT_GAME_FILE_STAGE
+  {
+   int32 phase_count;
+
+   AISCRIPT_GAME_FILE_STAGE_PHASE phases[100];
+  } AISCRIPT_GAME_FILE_STAGE;
   typedef struct AISCRIPT_GAME_FILE_DATA_FRAME_BPOINT
   {
    int32 x;
@@ -197,6 +255,36 @@
    int8  (*sound)[20];
    int32 unkwn19;
   } AISCRIPT_GAME_FILE_DATA_FRAME;
+  typedef struct AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY
+  {
+   int32 dvx;        // +0x00 | Value : game.objects[].data.strength.entry[].dvx      / game.files.datas[].strength.entry[].dvx
+   int32 dvy;        // +0x04 | Value : game.objects[].data.strength.entry[].dvy      / game.files.datas[].strength.entry[].dvy
+   int32 fall;       // +0x08 | Value : game.objects[].data.strength.entry[].fall     / game.files.datas[].strength.entry[].fall
+   int32 arest;      // +0x0C | Value : game.objects[].data.strength.entry[].arest    / game.files.datas[].strength.entry[].arest
+   int32 vrest;      // +0x10 | Value : game.objects[].data.strength.entry[].vrest    / game.files.datas[].strength.entry[].vrest
+   int32 respond;    // +0x14 | Value : game.objects[].data.strength.entry[].respond  / game.files.datas[].strength.entry[].respond
+   int32 effect;     // +0x18 | Value : game.objects[].data.strength.entry[].effect   / game.files.datas[].strength.entry[].effect
+   int8  unkwn1[20]; // +0x1C         : game.objects[].data.strength.entry[].unkwn1[] / game.files.datas[].strength.entry[].unkwn1[]
+   int32 bdefend;    // +0x30 | Value : game.objects[].data.strength.entry[].bdefend  / game.files.datas[].strength.entry[].bdefend
+   int32 injury;     // +0x34 | Value : game.objects[].data.strength.entry[].injury   / game.files.datas[].strength.entry[].injury
+   int32 zwidth;     // +0x38 | Value : game.objects[].data.strength.entry[].zwidth   / game.files.datas[].strength.entry[].zwidth
+   int8  unkwn2[20]; // +0x3C         : game.objects[].data.strength.entry[].unkwn2[] / game.files.datas[].strength.entry[].unkwn2[]
+  } AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY;
+  typedef struct AISCRIPT_GAME_FILE_DATA_STRENGTH
+  {
+   AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY entry[9];
+
+   int8 entry_name[5][30]; // The size was actually [10][30], but considering you'll use "file_Address" or etc, then it supposed to be [5][30].
+   int8 unkwn1[30];
+  } AISCRIPT_GAME_FILE_DATA_STRENGTH;
+  typedef struct AISCRIPT_GAME_FILE_DATA_FILE
+  {
+   int32 ptr[10];
+   int32 w[10];
+   int32 h[10];
+   int32 row[10];
+   int32 col[10];
+  } AISCRIPT_GAME_FILE_DATA_FILE;
   typedef struct AISCRIPT_GAME_FILE_DATA
   {
    int32  walking_frame_rate;
@@ -240,94 +328,6 @@
 
    int8   name[12];
   } AISCRIPT_GAME_FILE_DATA;
-  typedef struct AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN
-  {
-   int8   unkwn1[172]; // Seems to have something to do with bosses, is changed during game so I believe it keeps track of whether or not soldiers should respawn.
-   int32  id;
-   int32  x;
-   int32  hp;
-   int32  times;
-   int32  reserve;
-   int32  join;
-   int32  join_reserve;
-   int32  act;
-   int32  y;
-   xint64 ratio;
-   int32  role;       // 0 = Normal; 1 = "soldier"; 2 = "boss".
-   int8   unkwn2[4];
-  } AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN;
-  typedef struct AISCRIPT_GAME_FILE_STAGE_PHASE
-  {
-   int32 bound;
-   int8  music[52];
-
-   AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN spawns[60];
-
-   int32 when_clear_goto_phase;
-  } AISCRIPT_GAME_FILE_STAGE_PHASE;
-  typedef struct AISCRIPT_GAME_FILE_STAGE
-  {
-   int32 phase_count;
-
-   AISCRIPT_GAME_FILE_STAGE_PHASE phases[100];
-  } AISCRIPT_GAME_FILE_STAGE;
-  typedef struct AISCRIPT_GAME_FILE_BACKGROUND_LAYER
-  {
-   #if _AISCRIPT_FORDARKFIRENEXE
-    int32  transparency[100]; // 0x445 | Value   : game.files.get_backgrounds()[].layer[].transparency
-    int32  width[100];        // 0x4BD | Value   : game.files.get_backgrounds()[].layer[].width
-    int32  x[100];            // 0x535 | Value   : game.files.get_backgrounds()[].layer[].x
-    int32  y[100];            // 0x5AD | Value   : game.files.get_backgrounds()[].layer[].y
-    int32  height[100];       // 0x625 | Value   : game.files.get_backgrounds()[].layer[].height
-    int32  loop[100];         // 0x69D | Value   : game.files.get_backgrounds()[].layer[].loop
-    int32  c1[100];           // 0x715 | Value   : game.files.get_backgrounds()[].layer[].c1
-    int32  c2[100];           // 0x78D | Value   : game.files.get_backgrounds()[].layer[].c2
-    int32  cc[100];           // 0x805 | Value   : game.files.get_backgrounds()[].layer[].cc
-    int32  animation[100];    // 0x87D | Counter : game.files.get_backgrounds()[].layer[].animation
-    int32  rect[100];         // 0x8F5 | Value   : game.files.get_backgrounds()[].layer[].rect
-   #else
-    int32  transparency[30]; // 0x445 | Value   : game.files.get_backgrounds()[].layer[].transparency
-    int32  width[30];        // 0x4BD | Value   : game.files.get_backgrounds()[].layer[].width
-    int32  x[30];            // 0x535 | Value   : game.files.get_backgrounds()[].layer[].x
-    int32  y[30];            // 0x5AD | Value   : game.files.get_backgrounds()[].layer[].y
-    int32  height[30];       // 0x625 | Value   : game.files.get_backgrounds()[].layer[].height
-    int32  loop[30];         // 0x69D | Value   : game.files.get_backgrounds()[].layer[].loop
-    int32  c1[30];           // 0x715 | Value   : game.files.get_backgrounds()[].layer[].c1
-    int32  c2[30];           // 0x78D | Value   : game.files.get_backgrounds()[].layer[].c2
-    int32  cc[30];           // 0x805 | Value   : game.files.get_backgrounds()[].layer[].cc
-    int32  animation[30];    // 0x87D | Counter : game.files.get_backgrounds()[].layer[].animation
-    int32  rect[30];         // 0x8F5 | Value   : game.files.get_backgrounds()[].layer[].rect
-   #endif
-  } AISCRIPT_GAME_FILE_BACKGROUND_LAYER;
-  typedef struct AISCRIPT_GAME_FILE_BACKGROUND
-  {
-   int32  bg_width;             // +0x000 | Value   : game.files.get_backgrounds()[].bg_width
-   int32  bg_zwidth1;           // +0x004 | Value   : game.files.get_backgrounds()[].bg_zwidth1
-   int32  bg_zwidth2;           // +0x008 | Value   : game.files.get_backgrounds()[].bg_zwidth2
-   int32  perspective1;         // +0x00C | Value   : game.files.get_backgrounds()[].perspective1
-   int32  perspective2;         // +0x010 | Value   : game.files.get_backgrounds()[].perspective2
-   int32  shadow1;              // +0x014 | Value   : game.files.get_backgrounds()[].shadow1
-   int32  shadow2;              // +0x018 | Value   : game.files.get_backgrounds()[].shadow2
-   int32  layer_count;          // +0x01C | Value   : game.files.get_backgrounds()[].layer_count
-   #if _AISCRIPT_FORDARKFIRENEXE
-    int8   layer_bmps[100][30]; // +0x020 | Address : game.files.get_backgrounds()[].layer_bmps[][]
-   #else
-    int8   layer_bmps[30][30];  // +0x020 | Address : game.files.get_backgrounds()[].layer_bmps[][]
-   #endif
-   int8   shadow_bmp[30];       // +0x3A4 | Address : game.files.get_backgrounds()[].shadow_bmp[]
-   int8   unkwn1[10];           // +0x41C           : game.files.get_backgrounds()[].unkwn1[]
-   int8   name[30];             // +0x426 | String  : game.files.get_backgrounds()[].name[]
-   int8   unkwn2;               // +0x444           : game.files.get_backgrounds()[].unkwn2[]
-
-   AISCRIPT_GAME_FILE_BACKGROUND_LAYER layer;  // [+0x445] | Struct : game.files.get_backgrounds()[].layer[]
-   
-   #if _AISCRIPT_FORDARKFIRENEXE
-    int32  layer_ptrs[100];     // +0x96D | Pointer : game.files.get_backgrounds()[].layer_ptrs[]
-   #else
-    int32  layer_ptrs[30];      // +0x96D | Pointer : game.files.get_backgrounds()[].layer_ptrs[]
-   #endif
-   int32  ptrs;                 // +0x9E5 | Pointer : game.files.get_backgrounds()[].ptrs
-  } AISCRIPT_GAME_FILE_BACKGROUND;
   typedef struct AISCRIPT_GAME_FILE
   {
    AISCRIPT_GAME_FILE_DATA       *datas[500];                       //
@@ -489,6 +489,13 @@
     uint32 RefCount;
   } AISCRIPT_INFO;
 
+  #if _AISCRIPT_NEORACOMPATIBLE
+   typedef struct AISCRIPT_GAMEPTR
+   {
+    AISCRIPT_GAME game;
+   } AISCRIPT_GAMEPTR;
+  #endif
+
   // Index Control
    struct AISCRIPT_ARRAY_INT1       {int1  *opIndex(uint32) perfect;};
    struct AISCRIPT_ARRAY_INT8       {int8  *opIndex(uint32) perfect;};
@@ -502,11 +509,11 @@
    struct AISCRIPT_ARRAY_FRAME      {AISCRIPT_GAME_FILE_DATA_FRAME          *opIndex(uint32) perfect;};
    struct AISCRIPT_ARRAY_ITR        {AISCRIPT_GAME_FILE_DATA_FRAME_ITR      *opIndex(uint32) perfect;};
    struct AISCRIPT_ARRAY_BDY        {AISCRIPT_GAME_FILE_DATA_FRAME_BDY      *opIndex(uint32) perfect;};
-   struct AISCRIPT_ARRAY_BACKGROUND {AISCRIPT_GAME_FILE_BACKGROUND          *opIndex(uint32) perfect;};
-   struct AISCRIPT_ARRAY_LAYER      {AISCRIPT_GAME_FILE_BACKGROUND_LAYER    *opIndex(uint32) perfect;};
    struct AISCRIPT_ARRAY_STAGE      {AISCRIPT_GAME_FILE_STAGE               *opIndex(uint32) perfect;};
    struct AISCRIPT_ARRAY_PHASE      {AISCRIPT_GAME_FILE_STAGE_PHASE         *opIndex(uint32) perfect;};
    struct AISCRIPT_ARRAY_SPAWN      {AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN   *opIndex(uint32) perfect;};
+   struct AISCRIPT_ARRAY_BACKGROUND {AISCRIPT_GAME_FILE_BACKGROUND          *opIndex(uint32) perfect;};
+   struct AISCRIPT_ARRAY_LAYER      {AISCRIPT_GAME_FILE_BACKGROUND_LAYER    *opIndex(uint32) perfect;};
 
    #pragma warning (disable : 26481) // We're safe to access any offset in this case.
    template < int32 Vrab01 > int0                *Index(int0 *Vrab02)                               perfect {return (int0*)((int8*)Vrab02 + Vrab01);} // AngelScript does not support offsets larger than 0x7fff, and when that is the case, we use this function instead.
@@ -521,9 +528,9 @@
    AISCRIPT_GAME_FILE_DATA_FRAME                 *AISCRIPT_ARRAY_FRAME::opIndex(uint32 Vrab01)      perfect {return ((AISCRIPT_GAME_FILE_DATA_FRAME*)this) + Vrab01;}
    AISCRIPT_GAME_FILE_DATA_FRAME_ITR             *AISCRIPT_ARRAY_ITR::opIndex(uint32 Vrab01)        perfect {return ((AISCRIPT_GAME_FILE_DATA_FRAME_ITR*)this) + Vrab01;}
    AISCRIPT_GAME_FILE_DATA_FRAME_BDY             *AISCRIPT_ARRAY_BDY::opIndex(uint32 Vrab01)        perfect {return ((AISCRIPT_GAME_FILE_DATA_FRAME_BDY*)this) + Vrab01;}
-   AISCRIPT_GAME_FILE_BACKGROUND                 *AISCRIPT_ARRAY_BACKGROUND::opIndex(uint32 Vrab01) perfect {return ((AISCRIPT_GAME_FILE_BACKGROUND*)this) + Vrab01;}
-   AISCRIPT_GAME_FILE_BACKGROUND_LAYER           *AISCRIPT_ARRAY_LAYER::opIndex(uint32 Vrab01)      perfect {return (AISCRIPT_GAME_FILE_BACKGROUND_LAYER*)(((int32*)this) + Vrab01);}
    AISCRIPT_GAME_FILE_STAGE                      *AISCRIPT_ARRAY_STAGE::opIndex(uint32 Vrab01)      perfect {return ((AISCRIPT_GAME_FILE_STAGE*)this) + Vrab01;}
    AISCRIPT_GAME_FILE_STAGE_PHASE                *AISCRIPT_ARRAY_PHASE::opIndex(uint32 Vrab01)      perfect {return ((AISCRIPT_GAME_FILE_STAGE_PHASE*)this) + Vrab01;}
    AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN          *AISCRIPT_ARRAY_SPAWN::opIndex(uint32 Vrab01)      perfect {return ((AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN*)this) + Vrab01;}
+   AISCRIPT_GAME_FILE_BACKGROUND                 *AISCRIPT_ARRAY_BACKGROUND::opIndex(uint32 Vrab01) perfect {return ((AISCRIPT_GAME_FILE_BACKGROUND*)this) + Vrab01;}
+   AISCRIPT_GAME_FILE_BACKGROUND_LAYER           *AISCRIPT_ARRAY_LAYER::opIndex(uint32 Vrab01)      perfect {return (AISCRIPT_GAME_FILE_BACKGROUND_LAYER*)(((int32*)this) + Vrab01);}
 #endif
