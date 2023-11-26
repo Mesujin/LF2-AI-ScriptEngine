@@ -23,6 +23,7 @@
  int0 M_Update(statics int32, statics string) perfect;
 
 // Global Variables
+ int1  full_script = false;
  int32 mode;
  int32 difficulty;
  int32 elapsed_time;
@@ -135,7 +136,7 @@
  }
 
 // Light Functions
- int0   L_Base(int32 Vrab01, int1 Vrab02 = true)              perfect
+ int0   L_Base(int32 Vrab01, int1 Vrab02 = true) perfect
  {
   elapsed_time = *(int32*)0x450b8c;
   difficulty   = *(int32*)0x450c30;
@@ -685,8 +686,31 @@
   std::string fileName = std::to_string(id_int) + ".as";
 
   #ifdef AISCRIPT_DEBUG
+   if(full_script) M_Update(-1, "ai.as");
    M_Update(id_int, fileName);
   #endif
+
+  int1 Vrab01 = false;
+
+  if(full_script)
+  {
+   ScriptModule = ScriptEngine->GetModule(string("ai").c_str());
+   if(ScriptModule)
+   {
+    asIScriptFunction *Function = ScriptModule->GetFunctionByDecl("void id()");
+    if(Function){D_CallID(object_num, Function); Vrab01 = true;} else
+    {
+     Function = ScriptModule->GetFunctionByDecl("int id()");
+     if(Function){D_CallID(object_num, Function); if(ScriptContext->GetReturnDWord() == 0) return; Vrab01 = true;}
+     #ifdef AISCRIPT_DEBUG
+      else
+      {
+       ScriptEngine->WriteMessage(string("ai.as").c_str(), 0, 0, asMSGTYPE_ERROR, "Neither 'void id()' nor 'int id()' are defined.");
+      }
+     #endif
+    }
+   }
+  }
 
   ScriptModule = ScriptEngine->GetModule(std::to_string(id_int).c_str());
   if(ScriptModule)
@@ -703,6 +727,8 @@
     }
    #endif
   }
+
+  if(Vrab01) return;
 
   _asm
   {
@@ -833,45 +859,396 @@
  {
   RegisterScriptMath(ScriptEngine);
   RegisterScriptMathComplex(ScriptEngine);
-  RegisterStdString(ScriptEngine);
   RegisterScriptArray(ScriptEngine, true);
+  RegisterStdString(ScriptEngine);
   RegisterStdStringUtils(ScriptEngine);
   
   ScriptEngine->RegisterObjectType("Info", 0, asOBJ_REF);
   ScriptEngine->RegisterObjectType("Game", 0, asOBJ_REF | asOBJ_NOCOUNT);
-
-  ScriptEngine->RegisterObjectType("Opoint", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("Bpoint", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("Cpoint", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("Wpoint", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("Itr", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("Bdy", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("Frame", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("DataFile", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("Object", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("Spawn", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("Phase", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("Stage", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("Layer", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("Background", 0, asOBJ_REF | asOBJ_NOCOUNT);
+  
+  ScriptEngine->RegisterObjectType("Object",      0, asOBJ_REF | asOBJ_NOCOUNT);
   ScriptEngine->RegisterObjectType("FileManager", 0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("DataFile",    0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("File",        0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Strength",    0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Entry",       0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Frame",       0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Bpoint",      0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Cpoint",      0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Wpoint",      0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Opoint",      0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Itr",         0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Bdy",         0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Stage",       0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Phase",       0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Spawn",       0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Background",  0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("Layer",       0, asOBJ_REF | asOBJ_NOCOUNT);
 
-  ScriptEngine->RegisterObjectType("BoolArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("CharArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("BoolArray",        0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("CharArray",        0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("IntArray",         0, asOBJ_REF | asOBJ_NOCOUNT);
   ScriptEngine->RegisterObjectType("CharArrayArray30", 0, asOBJ_REF | asOBJ_NOCOUNT);
   ScriptEngine->RegisterObjectType("CharArrayArray40", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("IntArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("ItrArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("BdyArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("DataFileArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("ObjectArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("FrameArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("LayerArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("BackgroundArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("SpawnArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("PhaseArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
-  ScriptEngine->RegisterObjectType("StageArray", 0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("ObjectArray",      0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("DataFileArray",    0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("FileArray",        0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("EntryArray",       0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("FrameArray",       0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("ItrArray",         0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("BdyArray",         0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("StageArray",       0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("PhaseArray",       0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("SpawnArray",       0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("BackgroundArray",  0, asOBJ_REF | asOBJ_NOCOUNT);
+  ScriptEngine->RegisterObjectType("LayerArray",       0, asOBJ_REF | asOBJ_NOCOUNT);
+
+  ScriptEngine->RegisterObjectProperty("Game", "const int32 state",         asOFFSET(AISCRIPT_GAME, state));
+  ScriptEngine->RegisterObjectProperty("Game", "const BoolArray exists",    asOFFSET(AISCRIPT_GAME, exists));
+  ScriptEngine->RegisterObjectProperty("Game", "const ObjectArray objects", asOFFSET(AISCRIPT_GAME, objects));
+  ScriptEngine->RegisterObjectProperty("Game", "const FileManager @files",  asOFFSET(AISCRIPT_GAME, files));
   
+  ScriptEngine->RegisterObjectProperty("FileManager", "const DataFileArray datas", asOFFSET(AISCRIPT_GAME_FILE, datas));
+  ScriptEngine->RegisterObjectProperty("FileManager", "const IntArray data_ptrs",  asOFFSET(AISCRIPT_GAME_FILE, datas)); //allows to check whether or not a datafile exists
+  ScriptEngine->RegisterObjectProperty("FileManager", "const StageArray stages",   asOFFSET(AISCRIPT_GAME_FILE, stages));
+  ScriptEngine->RegisterObjectMethod  ("FileManager", "const BackgroundArray &get_backgrounds() const", asFUNCTION(Index < asOFFSET(AISCRIPT_GAME_FILE, backgrounds) >), asCALL_CDECL_OBJLAST);
+
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  move_counter", asOFFSET(AISCRIPT_GAME_OBJECT, move_counter));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  run_counter",  asOFFSET(AISCRIPT_GAME_OBJECT, run_counter));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  blink",        asOFFSET(AISCRIPT_GAME_OBJECT, blink));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  unkwn1",       asOFFSET(AISCRIPT_GAME_OBJECT, unkwn1));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  x", asOFFSET(AISCRIPT_GAME_OBJECT, x));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  y", asOFFSET(AISCRIPT_GAME_OBJECT, y));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  z", asOFFSET(AISCRIPT_GAME_OBJECT, z));
+  ScriptEngine->RegisterObjectProperty("Object", "const CharArray unkwn2",      asOFFSET(AISCRIPT_GAME_OBJECT, unkwn2));
+  ScriptEngine->RegisterObjectProperty("Object", "const double x_acceleration", asOFFSET(AISCRIPT_GAME_OBJECT, x_acceleration));
+  ScriptEngine->RegisterObjectProperty("Object", "const double y_acceleration", asOFFSET(AISCRIPT_GAME_OBJECT, y_acceleration));
+  ScriptEngine->RegisterObjectProperty("Object", "const double z_acceleration", asOFFSET(AISCRIPT_GAME_OBJECT, z_acceleration));
+  ScriptEngine->RegisterObjectProperty("Object", "const double x_velocity", asOFFSET(AISCRIPT_GAME_OBJECT, x_velocity));
+  ScriptEngine->RegisterObjectProperty("Object", "const double y_velocity", asOFFSET(AISCRIPT_GAME_OBJECT, y_velocity));
+  ScriptEngine->RegisterObjectProperty("Object", "const double z_velocity", asOFFSET(AISCRIPT_GAME_OBJECT, z_velocity));
+  ScriptEngine->RegisterObjectProperty("Object", "const double x_real", asOFFSET(AISCRIPT_GAME_OBJECT, x_real));
+  ScriptEngine->RegisterObjectProperty("Object", "const double y_real", asOFFSET(AISCRIPT_GAME_OBJECT, y_real));
+  ScriptEngine->RegisterObjectProperty("Object", "const double z_real", asOFFSET(AISCRIPT_GAME_OBJECT, z_real));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  frame1", asOFFSET(AISCRIPT_GAME_OBJECT, frame1));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  frame2", asOFFSET(AISCRIPT_GAME_OBJECT, frame2));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  frame3", asOFFSET(AISCRIPT_GAME_OBJECT, frame3));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  frame4", asOFFSET(AISCRIPT_GAME_OBJECT, frame4));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   facing", asOFFSET(AISCRIPT_GAME_OBJECT, facing));
+  ScriptEngine->RegisterObjectProperty("Object", "const CharArray unkwn3",     asOFFSET(AISCRIPT_GAME_OBJECT, unkwn3));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  wait_counter",  asOFFSET(AISCRIPT_GAME_OBJECT, wait_counter));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  ccatching",     asOFFSET(AISCRIPT_GAME_OBJECT, ccatching));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  ccatcher",      asOFFSET(AISCRIPT_GAME_OBJECT, ccatcher));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  ctimer",        asOFFSET(AISCRIPT_GAME_OBJECT, ctimer));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  weapon_type",   asOFFSET(AISCRIPT_GAME_OBJECT, weapon_type));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  weapon_held",   asOFFSET(AISCRIPT_GAME_OBJECT, weapon_held));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  weapon_holder", asOFFSET(AISCRIPT_GAME_OBJECT, weapon_holder));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  unkwn4",        asOFFSET(AISCRIPT_GAME_OBJECT, unkwn4));
+  ScriptEngine->RegisterObjectProperty("Object", "const CharArray unkwn5",     asOFFSET(AISCRIPT_GAME_OBJECT, unkwn5));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  fall",          asOFFSET(AISCRIPT_GAME_OBJECT, fall));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  shake",         asOFFSET(AISCRIPT_GAME_OBJECT, shake));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  bdefend",       asOFFSET(AISCRIPT_GAME_OBJECT, bdefend));
+  ScriptEngine->RegisterObjectProperty("Object", "const CharArray unkwn6",     asOFFSET(AISCRIPT_GAME_OBJECT, unkwn6));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   holding_up",    asOFFSET(AISCRIPT_GAME_OBJECT, holding_up));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   holding_down",  asOFFSET(AISCRIPT_GAME_OBJECT, holding_down));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   holding_left",  asOFFSET(AISCRIPT_GAME_OBJECT, holding_left));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   holding_right", asOFFSET(AISCRIPT_GAME_OBJECT, holding_right));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   holding_a",     asOFFSET(AISCRIPT_GAME_OBJECT, holding_a));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   holding_j",     asOFFSET(AISCRIPT_GAME_OBJECT, holding_j));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   holding_d",     asOFFSET(AISCRIPT_GAME_OBJECT, holding_d));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   up",    asOFFSET(AISCRIPT_GAME_OBJECT, up));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   down",  asOFFSET(AISCRIPT_GAME_OBJECT, down));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   left",  asOFFSET(AISCRIPT_GAME_OBJECT, left));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   right", asOFFSET(AISCRIPT_GAME_OBJECT, right));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   A",     asOFFSET(AISCRIPT_GAME_OBJECT, A));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   J",     asOFFSET(AISCRIPT_GAME_OBJECT, J));
+  ScriptEngine->RegisterObjectProperty("Object", "const bool   D",     asOFFSET(AISCRIPT_GAME_OBJECT, D));
+  ScriptEngine->RegisterObjectProperty("Object", "const int8   DrA", asOFFSET(AISCRIPT_GAME_OBJECT, DrA));
+  ScriptEngine->RegisterObjectProperty("Object", "const int8   DlA", asOFFSET(AISCRIPT_GAME_OBJECT, DlA));
+  ScriptEngine->RegisterObjectProperty("Object", "const int8   DuA", asOFFSET(AISCRIPT_GAME_OBJECT, DuA));
+  ScriptEngine->RegisterObjectProperty("Object", "const int8   DdA", asOFFSET(AISCRIPT_GAME_OBJECT, DdA));
+  ScriptEngine->RegisterObjectProperty("Object", "const int8   DrJ", asOFFSET(AISCRIPT_GAME_OBJECT, DrJ));
+  ScriptEngine->RegisterObjectProperty("Object", "const int8   DlJ", asOFFSET(AISCRIPT_GAME_OBJECT, DlJ));
+  ScriptEngine->RegisterObjectProperty("Object", "const int8   DuJ", asOFFSET(AISCRIPT_GAME_OBJECT, DuJ));
+  ScriptEngine->RegisterObjectProperty("Object", "const int8   DdJ", asOFFSET(AISCRIPT_GAME_OBJECT, DdJ));
+  ScriptEngine->RegisterObjectProperty("Object", "const int8   DJA", asOFFSET(AISCRIPT_GAME_OBJECT, DJA));
+  ScriptEngine->RegisterObjectProperty("Object", "const CharArray unkwn7", asOFFSET(AISCRIPT_GAME_OBJECT, unkwn7));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  heal",      asOFFSET(AISCRIPT_GAME_OBJECT, heal));
+  ScriptEngine->RegisterObjectProperty("Object", "const CharArray unkwn8", asOFFSET(AISCRIPT_GAME_OBJECT, unkwn8));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  arest",     asOFFSET(AISCRIPT_GAME_OBJECT, arest));
+  ScriptEngine->RegisterObjectProperty("Object", "const CharArray vrests", asOFFSET(AISCRIPT_GAME_OBJECT, vrests));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  attacked_object_num", asOFFSET(AISCRIPT_GAME_OBJECT, attacked_object_num));
+  ScriptEngine->RegisterObjectProperty("Object", "const CharArray unkwn9",           asOFFSET(AISCRIPT_GAME_OBJECT, unkwn9));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  clone",               asOFFSET(AISCRIPT_GAME_OBJECT, clone));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  weapon_thrower",      asOFFSET(AISCRIPT_GAME_OBJECT, weapon_thrower));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  hp",      asOFFSET(AISCRIPT_GAME_OBJECT, hp));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  dark_hp", asOFFSET(AISCRIPT_GAME_OBJECT, dark_hp));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  max_hp",  asOFFSET(AISCRIPT_GAME_OBJECT, max_hp));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  mp",      asOFFSET(AISCRIPT_GAME_OBJECT, mp));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  reserve", asOFFSET(AISCRIPT_GAME_OBJECT, reserve));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  unkwn10", asOFFSET(AISCRIPT_GAME_OBJECT, unkwn10));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  unkwn11", asOFFSET(AISCRIPT_GAME_OBJECT, unkwn11));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  pic_gain",          asOFFSET(AISCRIPT_GAME_OBJECT, pic_gain));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  bottle_hp",         asOFFSET(AISCRIPT_GAME_OBJECT, bottle_hp));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  throwinjury",       asOFFSET(AISCRIPT_GAME_OBJECT, throwinjury));
+  ScriptEngine->RegisterObjectProperty("Object", "const CharArray unkwn12",        asOFFSET(AISCRIPT_GAME_OBJECT, unkwn12));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  firzen_counter",    asOFFSET(AISCRIPT_GAME_OBJECT, firzen_counter));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  unkwn13",           asOFFSET(AISCRIPT_GAME_OBJECT, unkwn13));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  armour_multiplier", asOFFSET(AISCRIPT_GAME_OBJECT, armour_multiplier));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  unkwn14",           asOFFSET(AISCRIPT_GAME_OBJECT, unkwn14));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  total_attack",      asOFFSET(AISCRIPT_GAME_OBJECT, total_attack));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  hp_lost",           asOFFSET(AISCRIPT_GAME_OBJECT, hp_lost));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  mp_usage",          asOFFSET(AISCRIPT_GAME_OBJECT, mp_usage));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  host",              asOFFSET(AISCRIPT_GAME_OBJECT, host));
+  ScriptEngine->RegisterObjectProperty("Object", "const CharArray unkwn15",        asOFFSET(AISCRIPT_GAME_OBJECT, host));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  kills",             asOFFSET(AISCRIPT_GAME_OBJECT, kills));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  weapon_picks",      asOFFSET(AISCRIPT_GAME_OBJECT, weapon_picks));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  enemy",             asOFFSET(AISCRIPT_GAME_OBJECT, enemy));
+  ScriptEngine->RegisterObjectProperty("Object", "const int32  team",              asOFFSET(AISCRIPT_GAME_OBJECT, team));
+  ScriptEngine->RegisterObjectProperty("Object", "const DataFile @data",           asOFFSET(AISCRIPT_GAME_OBJECT, data));
+  
+  ScriptEngine->RegisterObjectProperty("DataFile", "const int32  walking_frame_rate", asOFFSET(AISCRIPT_GAME_FILE_DATA, walking_frame_rate));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const int32  unkwn1",             asOFFSET(AISCRIPT_GAME_FILE_DATA, unkwn1));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double walking_speed",      asOFFSET(AISCRIPT_GAME_FILE_DATA, walking_speed));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double walking_speedz",     asOFFSET(AISCRIPT_GAME_FILE_DATA, walking_speedz));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const int32  running_frame_rate", asOFFSET(AISCRIPT_GAME_FILE_DATA, running_frame_rate));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double running_speed",      asOFFSET(AISCRIPT_GAME_FILE_DATA, running_speed));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double running_speedz",     asOFFSET(AISCRIPT_GAME_FILE_DATA, running_speedz));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double heavy_walking_speed",  asOFFSET(AISCRIPT_GAME_FILE_DATA, heavy_walking_speed));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double heavy_walking_speedz", asOFFSET(AISCRIPT_GAME_FILE_DATA, heavy_walking_speedz));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double heavy_running_speed",  asOFFSET(AISCRIPT_GAME_FILE_DATA, heavy_running_speed));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double heavy_running_speedz", asOFFSET(AISCRIPT_GAME_FILE_DATA, heavy_running_speedz));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double jump_height",      asOFFSET(AISCRIPT_GAME_FILE_DATA, jump_height));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double jump_distance",    asOFFSET(AISCRIPT_GAME_FILE_DATA, jump_distance));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double jump_distancez",   asOFFSET(AISCRIPT_GAME_FILE_DATA, jump_distancez));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double dash_height",      asOFFSET(AISCRIPT_GAME_FILE_DATA, dash_height));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double dash_distance",    asOFFSET(AISCRIPT_GAME_FILE_DATA, dash_distance));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double dash_distancez",   asOFFSET(AISCRIPT_GAME_FILE_DATA, dash_distancez));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double rowing_height",    asOFFSET(AISCRIPT_GAME_FILE_DATA, rowing_height));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const double rowing_distance",  asOFFSET(AISCRIPT_GAME_FILE_DATA, rowing_distance));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const int32  weapon_hp",        asOFFSET(AISCRIPT_GAME_FILE_DATA, weapon_hp));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const int32  weapon_drop_hurt", asOFFSET(AISCRIPT_GAME_FILE_DATA, weapon_drop_hurt));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const CharArray unkwn2",        asOFFSET(AISCRIPT_GAME_FILE_DATA, unkwn2));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const int32  file_count",       asOFFSET(AISCRIPT_GAME_FILE_DATA, file_count));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const CharArrayArray40 file_address", asOFFSET(AISCRIPT_GAME_FILE_DATA, file_address));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const FileArray file", asOFFSET(AISCRIPT_GAME_FILE_DATA, file));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const int32  id",      asOFFSET(AISCRIPT_GAME_FILE_DATA, id));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const int32  type",    asOFFSET(AISCRIPT_GAME_FILE_DATA, type));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const int32  unkwn3",  asOFFSET(AISCRIPT_GAME_FILE_DATA, unkwn3));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const CharArray small_bmp", asOFFSET(AISCRIPT_GAME_FILE_DATA, small_bmp));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const int32  unkwn4",       asOFFSET(AISCRIPT_GAME_FILE_DATA, unkwn4));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const CharArray  face_bmp", asOFFSET(AISCRIPT_GAME_FILE_DATA, face_bmp));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const IntArray   unkwn5",   asOFFSET(AISCRIPT_GAME_FILE_DATA, unkwn5));
+  ScriptEngine->RegisterObjectProperty("DataFile", "const FrameArray frames",   asOFFSET(AISCRIPT_GAME_FILE_DATA, frames));
+  ScriptEngine->RegisterObjectMethod  ("DataFile", "const CharArray  &get_name() const", asFUNCTION(Index < asOFFSET(AISCRIPT_GAME_FILE_DATA, name) >), asCALL_CDECL_OBJLAST);
+    
+  ScriptEngine->RegisterObjectProperty("File", "const int32 ptr", asOFFSET(AISCRIPT_GAME_FILE_DATA_FILE, ptr[0]));
+  ScriptEngine->RegisterObjectProperty("File", "const int32 w",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FILE, w[0]));
+  ScriptEngine->RegisterObjectProperty("File", "const int32 h",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FILE, h[0]));
+  ScriptEngine->RegisterObjectProperty("File", "const int32 row", asOFFSET(AISCRIPT_GAME_FILE_DATA_FILE, row[0]));
+  ScriptEngine->RegisterObjectProperty("File", "const int32 col", asOFFSET(AISCRIPT_GAME_FILE_DATA_FILE, col[0]));
+
+  ScriptEngine->RegisterObjectProperty("Strength", "const EntryArray entry",            asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH, entry[0]));
+  ScriptEngine->RegisterObjectProperty("Strength", "const CharArrayArray30 entry_name", asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH, entry_name[0][0]));
+  ScriptEngine->RegisterObjectProperty("Strength", "const CharArray unkwn1",            asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH, unkwn1[0]));
+ 
+  ScriptEngine->RegisterObjectProperty("Entry", "const int32 dvx",        asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY, dvx));
+  ScriptEngine->RegisterObjectProperty("Entry", "const int32 dvy",        asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY, dvy));
+  ScriptEngine->RegisterObjectProperty("Entry", "const int32 fall",       asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY, fall));
+  ScriptEngine->RegisterObjectProperty("Entry", "const int32 arest",      asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY, arest));
+  ScriptEngine->RegisterObjectProperty("Entry", "const int32 vrest",      asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY, vrest));
+  ScriptEngine->RegisterObjectProperty("Entry", "const int32 respond",    asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY, respond));
+  ScriptEngine->RegisterObjectProperty("Entry", "const int32 effect",     asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY, effect));
+  ScriptEngine->RegisterObjectProperty("Entry", "const CharArray unkwn1", asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY, unkwn1[0]));
+  ScriptEngine->RegisterObjectProperty("Entry", "const int32 bdefend",    asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY, bdefend));
+  ScriptEngine->RegisterObjectProperty("Entry", "const int32 injury",     asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY, injury));
+  ScriptEngine->RegisterObjectProperty("Entry", "const int32 zwidth",     asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY, zwidth));
+  ScriptEngine->RegisterObjectProperty("Entry", "const CharArray unkwn2", asOFFSET(AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY, unkwn2[0]));
+
+  ScriptEngine->RegisterObjectProperty("Frame", "const bool  exists",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, exists));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 pic",     asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, pic));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 state",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, state));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 wait",    asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, wait));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 next",    asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, next));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 dvx",     asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, dvx));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 dvy",     asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, dvy));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 dvz",     asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, dvz));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn1",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn1));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 hit_a",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, hit_a));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 hit_d",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, hit_d));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 hit_j",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, hit_j));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 hit_Fa",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, hit_Fa));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 hit_Ua",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, hit_Ua));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 hit_Da",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, hit_Da));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 hit_Fj",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, hit_Fj));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 hit_Uj",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, hit_Uj));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 hit_Dj",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, hit_Dj));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 hit_ja",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, hit_ja));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 mp",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, mp));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 centerx", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, centerx));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 centery", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, centery));
+  ScriptEngine->RegisterObjectProperty("Frame", "const Opoint opoint", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, opoint));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn2",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn2));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn3",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn3));
+  ScriptEngine->RegisterObjectProperty("Frame", "const Bpoint bpoint", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, bpoint));
+  ScriptEngine->RegisterObjectProperty("Frame", "const Cpoint cpoint", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, cpoint));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn4",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn4));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn5",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn5));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn6",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn6));
+  ScriptEngine->RegisterObjectProperty("Frame", "const Wpoint wpoint", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, wpoint));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn7",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn7));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn8",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn8));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn9",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn9));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn10", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn10));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn11", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn11));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn12", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn12));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn13", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn13));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn14", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn14));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn15", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn15));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn16", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn16));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn17", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn17));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 itr_count", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, itr_count));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 bdy_count", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, bdy_count));
+  ScriptEngine->RegisterObjectProperty("Frame", "const ItrArray @itrs",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, itrs));
+  ScriptEngine->RegisterObjectProperty("Frame", "const BdyArray @bdys",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, bdys));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 itr_x",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, itr_x));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 itr_y",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, itr_y));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 itr_w",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, itr_w));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 itr_h",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, itr_h));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 bdy_x",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, bdy_x));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 bdy_y",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, bdy_y));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 bdy_w",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, bdy_w));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 bdy_h",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, bdy_h));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn18", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn18));
+  ScriptEngine->RegisterObjectProperty("Frame", "const CharArray fname",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, fname));
+  ScriptEngine->RegisterObjectProperty("Frame", "const CharArray @sound", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, sound));
+  ScriptEngine->RegisterObjectProperty("Frame", "const int32 unkwn19",    asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME, unkwn19));
+
+  ScriptEngine->RegisterObjectProperty("Bpoint", "const int32 x", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_BPOINT, x));
+  ScriptEngine->RegisterObjectProperty("Bpoint", "const int32 y", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_BPOINT, y));
+
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 kind",         asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, kind));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 x",            asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, x));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 y",            asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, y));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 injury",       asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, injury));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 cover",        asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, cover));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 fronthurtact", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, injury));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 backhurtact",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, cover)); 
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 vaction",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, vaction));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 aaction",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, aaction));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 jaction",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, jaction));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 daction",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, daction));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 throwvx",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, throwvx));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 throwvy",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, throwvy));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 hurtable",     asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, hurtable));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 decrease",     asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, decrease));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 dircontrol",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, dircontrol));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 taction",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, taction));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 throwinjury",  asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, throwinjury));
+  ScriptEngine->RegisterObjectProperty("Cpoint", "const int32 throwvz",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT, throwvz));
+
+  ScriptEngine->RegisterObjectProperty("Wpoint", "const int32 kind",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_WPOINT, kind));
+  ScriptEngine->RegisterObjectProperty("Wpoint", "const int32 x",         asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_WPOINT, x));
+  ScriptEngine->RegisterObjectProperty("Wpoint", "const int32 y",         asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_WPOINT, y));
+  ScriptEngine->RegisterObjectProperty("Wpoint", "const int32 weaponact", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_WPOINT, weaponact));
+  ScriptEngine->RegisterObjectProperty("Wpoint", "const int32 attacking", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_WPOINT, attacking));
+  ScriptEngine->RegisterObjectProperty("Wpoint", "const int32 cover",     asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_WPOINT, cover));
+  ScriptEngine->RegisterObjectProperty("Wpoint", "const int32 dvx",       asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_WPOINT, dvx));
+  ScriptEngine->RegisterObjectProperty("Wpoint", "const int32 dvy",       asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_WPOINT, dvy));
+  ScriptEngine->RegisterObjectProperty("Wpoint", "const int32 dvz",       asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_WPOINT, dvz));
+
+  ScriptEngine->RegisterObjectProperty("Opoint", "const int32 kind",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_OPOINT, kind));
+  ScriptEngine->RegisterObjectProperty("Opoint", "const int32 x",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_OPOINT, x));
+  ScriptEngine->RegisterObjectProperty("Opoint", "const int32 y",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_OPOINT, y));
+  ScriptEngine->RegisterObjectProperty("Opoint", "const int32 action", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_OPOINT, action));
+  ScriptEngine->RegisterObjectProperty("Opoint", "const int32 dvx",    asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_OPOINT, dvx));
+  ScriptEngine->RegisterObjectProperty("Opoint", "const int32 dvy",    asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_OPOINT, dvy));
+  ScriptEngine->RegisterObjectProperty("Opoint", "const int32 oid",    asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_OPOINT, oid));
+  ScriptEngine->RegisterObjectProperty("Opoint", "const int32 facing", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_OPOINT, facing));
+
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 kind",         asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, kind));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 x",            asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, x));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 y",            asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, y));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 w",            asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, w));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 h",            asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, h));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 dvx",          asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, dvx));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 dvy",          asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, dvy));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 fall",         asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, fall));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 arest",        asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, arest));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 vrest",        asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, vrest));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 respond",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, respond));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 effect",       asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, effect));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 catchingact1", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, catchingact1));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 catchingact2", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, catchingact2));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 caughtact1",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, caughtact1));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 caughtact2",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, caughtact2));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 bdefend",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, bdefend));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 injury",       asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, injury));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 zwidth",       asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, zwidth));
+  ScriptEngine->RegisterObjectProperty("Itr", "const int32 unkwn2",       asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_ITR, unkwn1));
+
+  ScriptEngine->RegisterObjectProperty("Bdy", "const int32 kind",   asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_BDY, kind));
+  ScriptEngine->RegisterObjectProperty("Bdy", "const int32 x",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_BDY, x));
+  ScriptEngine->RegisterObjectProperty("Bdy", "const int32 y",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_BDY, y));
+  ScriptEngine->RegisterObjectProperty("Bdy", "const int32 w",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_BDY, w));
+  ScriptEngine->RegisterObjectProperty("Bdy", "const int32 h",      asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_BDY, h));
+  ScriptEngine->RegisterObjectProperty("Bdy", "const int32 unkwn1", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_BDY, unkwn1));
+  ScriptEngine->RegisterObjectProperty("Bdy", "const int32 unkwn2", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_BDY, unkwn2));
+  ScriptEngine->RegisterObjectProperty("Bdy", "const int32 unkwn3", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_BDY, unkwn3));
+  ScriptEngine->RegisterObjectProperty("Bdy", "const int32 unkwn4", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_BDY, unkwn4));
+  ScriptEngine->RegisterObjectProperty("Bdy", "const int32 unkwn5", asOFFSET(AISCRIPT_GAME_FILE_DATA_FRAME_BDY, unkwn5));
+
+  ScriptEngine->RegisterObjectProperty("Stage", "const int32 phase_count", asOFFSET(AISCRIPT_GAME_FILE_STAGE, phase_count));
+  ScriptEngine->RegisterObjectProperty("Stage", "const PhaseArray phases", asOFFSET(AISCRIPT_GAME_FILE_STAGE, phases));
+
+  ScriptEngine->RegisterObjectProperty("Phase", "const int32 bound",       asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE, bound));
+  ScriptEngine->RegisterObjectProperty("Phase", "const CharArray  music",  asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE, music));
+  ScriptEngine->RegisterObjectProperty("Phase", "const SpawnArray spawns", asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE, spawns));
+  ScriptEngine->RegisterObjectProperty("Phase", "const int32 when_clear_goto_phase", asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE, when_clear_goto_phase));
+ 
+  ScriptEngine->RegisterObjectProperty("Spawn", "const IntArray unkwn1",     asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, unkwn1));
+  ScriptEngine->RegisterObjectProperty("Spawn", "const int32  id",           asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, id));
+  ScriptEngine->RegisterObjectProperty("Spawn", "const int32  x",            asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, x));
+  ScriptEngine->RegisterObjectProperty("Spawn", "const int32  hp",           asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, hp));
+  ScriptEngine->RegisterObjectProperty("Spawn", "const int32  times",        asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, times));
+  ScriptEngine->RegisterObjectProperty("Spawn", "const int32  reserve",      asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, reserve));
+  ScriptEngine->RegisterObjectProperty("Spawn", "const int32  join",         asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, join));
+  ScriptEngine->RegisterObjectProperty("Spawn", "const int32  join_reserve", asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, join_reserve));
+  ScriptEngine->RegisterObjectProperty("Spawn", "const int32  act",          asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, act));
+  ScriptEngine->RegisterObjectProperty("Spawn", "const int32  y",            asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, y));
+  ScriptEngine->RegisterObjectProperty("Spawn", "const double ratio",        asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, ratio));
+  ScriptEngine->RegisterObjectProperty("Spawn", "const int32  role",         asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, role));
+  ScriptEngine->RegisterObjectProperty("Spawn", "const int32  unkwn2",       asOFFSET(AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN, unkwn2));
+  
+  ScriptEngine->RegisterObjectProperty("Background", "const int32 bg_width",     asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, bg_width));
+  ScriptEngine->RegisterObjectProperty("Background", "const int32 bg_zwidth1",   asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, bg_zwidth1));
+  ScriptEngine->RegisterObjectProperty("Background", "const int32 bg_zwidth2",   asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, bg_zwidth2));
+  ScriptEngine->RegisterObjectProperty("Background", "const int32 perspective1", asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, perspective1));
+  ScriptEngine->RegisterObjectProperty("Background", "const int32 perspective2", asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, perspective2));
+  ScriptEngine->RegisterObjectProperty("Background", "const int32 shadow1",      asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, shadow1));
+  ScriptEngine->RegisterObjectProperty("Background", "const int32 shadow2",      asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, shadow2));
+  ScriptEngine->RegisterObjectProperty("Background", "const int32 layer_count",  asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, layer_count));
+  ScriptEngine->RegisterObjectProperty("Background", "const CharArrayArray30 layer_bmps", asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, layer_bmps));
+  ScriptEngine->RegisterObjectProperty("Background", "const CharArray shadow_bmp", asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, shadow_bmp));
+  ScriptEngine->RegisterObjectProperty("Background", "const CharArray unkwn1",     asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, unkwn1));
+  ScriptEngine->RegisterObjectProperty("Background", "const CharArray name",       asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, name));
+  ScriptEngine->RegisterObjectProperty("Background", "const CharArray unkwn2",     asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, unkwn2));
+  ScriptEngine->RegisterObjectProperty("Background", "const LayerArray layer",     asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, layer));
+  ScriptEngine->RegisterObjectProperty("Background", "const IntArray layer_ptrs",  asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, layer_ptrs));
+  ScriptEngine->RegisterObjectProperty("Background", "const int ptr",              asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND, ptrs));
+
+  ScriptEngine->RegisterObjectProperty("Layer", "const int32 transparency", asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND_LAYER, transparency));
+  ScriptEngine->RegisterObjectProperty("Layer", "const int32 width",        asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND_LAYER, width));
+  ScriptEngine->RegisterObjectProperty("Layer", "const int32 x",            asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND_LAYER, x));
+  ScriptEngine->RegisterObjectProperty("Layer", "const int32 y",            asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND_LAYER, y));
+  ScriptEngine->RegisterObjectProperty("Layer", "const int32 height",       asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND_LAYER, height));
+  ScriptEngine->RegisterObjectProperty("Layer", "const int32 loop",         asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND_LAYER, loop));
+  ScriptEngine->RegisterObjectProperty("Layer", "const int32 c1",           asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND_LAYER, c1));
+  ScriptEngine->RegisterObjectProperty("Layer", "const int32 c2",           asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND_LAYER, c2));
+  ScriptEngine->RegisterObjectProperty("Layer", "const int32 cc",           asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND_LAYER, cc));
+  ScriptEngine->RegisterObjectProperty("Layer", "const int32 animation",    asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND_LAYER, animation));
+  ScriptEngine->RegisterObjectProperty("Layer", "const int32 rect",         asOFFSET(AISCRIPT_GAME_FILE_BACKGROUND_LAYER, rect));
+
   ScriptEngine->RegisterObjectBehaviour("Info", asBEHAVE_ADDREF,  "void f()", asMETHOD(AISCRIPT_INFO, AddRef), asCALL_THISCALL);
   ScriptEngine->RegisterObjectBehaviour("Info", asBEHAVE_RELEASE, "void f()", asMETHOD(AISCRIPT_INFO, RelRef), asCALL_THISCALL);
   ScriptEngine->RegisterObjectBehaviour("Info", asBEHAVE_FACTORY, "Info @f()",    asFUNCTIONPR(Info_Factory, (), AISCRIPT_INFO*), asCALL_CDECL);
@@ -883,16 +1260,18 @@
   ScriptEngine->RegisterObjectMethod("IntArray",         "const int32 &opIndex(uint x) const",      asMETHOD(AISCRIPT_ARRAY_INT32, opIndex), asCALL_THISCALL);
   ScriptEngine->RegisterObjectMethod("CharArrayArray30", "const CharArray &opIndex(uint x) const",  asMETHOD(AISCRIPT_ARRAY_ARRAY_INT8, opIndex < 30 >), asCALL_THISCALL);
   ScriptEngine->RegisterObjectMethod("CharArrayArray40", "const CharArray &opIndex(uint x) const",  asMETHOD(AISCRIPT_ARRAY_ARRAY_INT8, opIndex < 40 >), asCALL_THISCALL);
-  ScriptEngine->RegisterObjectMethod("DataFileArray",    "const DataFile &opIndex(uint x) const",   asMETHOD(AISCRIPT_ARRAY_DATA, opIndex), asCALL_THISCALL);
   ScriptEngine->RegisterObjectMethod("ObjectArray",      "const Object &opIndex(uint x) const",     asMETHOD(AISCRIPT_ARRAY_OBJECT, opIndex), asCALL_THISCALL);
+  ScriptEngine->RegisterObjectMethod("DataFileArray",    "const DataFile &opIndex(uint x) const",   asMETHOD(AISCRIPT_ARRAY_DATA, opIndex), asCALL_THISCALL);
+  ScriptEngine->RegisterObjectMethod("FileArray",        "const File &opIndex(uint x) const",       asMETHOD(AISCRIPT_ARRAY_FILE, opIndex), asCALL_THISCALL);
+  ScriptEngine->RegisterObjectMethod("EntryArray",       "const Entry &opIndex(uint x) const",      asMETHOD(AISCRIPT_ARRAY_ENTRY, opIndex), asCALL_THISCALL);
   ScriptEngine->RegisterObjectMethod("FrameArray",       "const Frame &opIndex(uint x) const",      asMETHOD(AISCRIPT_ARRAY_FRAME, opIndex), asCALL_THISCALL);
-  ScriptEngine->RegisterObjectMethod("LayerArray",       "const Layer &opIndex(uint x) const",      asMETHOD(AISCRIPT_ARRAY_LAYER, opIndex), asCALL_THISCALL);
-  ScriptEngine->RegisterObjectMethod("BackgroundArray",  "const Background &opIndex(uint x) const", asMETHOD(AISCRIPT_ARRAY_BACKGROUND, opIndex), asCALL_THISCALL);
-  ScriptEngine->RegisterObjectMethod("SpawnArray",       "const Spawn &opIndex(uint x) const",      asMETHOD(AISCRIPT_ARRAY_SPAWN, opIndex), asCALL_THISCALL);
-  ScriptEngine->RegisterObjectMethod("PhaseArray",       "const Phase &opIndex(uint x) const",      asMETHOD(AISCRIPT_ARRAY_PHASE, opIndex), asCALL_THISCALL);
-  ScriptEngine->RegisterObjectMethod("StageArray",       "const Stage &opIndex(uint x) const",      asMETHOD(AISCRIPT_ARRAY_STAGE, opIndex), asCALL_THISCALL);
   ScriptEngine->RegisterObjectMethod("ItrArray",         "const Itr &opIndex(uint x) const",        asMETHOD(AISCRIPT_ARRAY_ITR, opIndex), asCALL_THISCALL);
   ScriptEngine->RegisterObjectMethod("BdyArray",         "const Bdy &opIndex(uint x) const",        asMETHOD(AISCRIPT_ARRAY_BDY, opIndex), asCALL_THISCALL);
+  ScriptEngine->RegisterObjectMethod("StageArray",       "const Stage &opIndex(uint x) const",      asMETHOD(AISCRIPT_ARRAY_STAGE, opIndex), asCALL_THISCALL);
+  ScriptEngine->RegisterObjectMethod("PhaseArray",       "const Phase &opIndex(uint x) const",      asMETHOD(AISCRIPT_ARRAY_PHASE, opIndex), asCALL_THISCALL);
+  ScriptEngine->RegisterObjectMethod("SpawnArray",       "const Spawn &opIndex(uint x) const",      asMETHOD(AISCRIPT_ARRAY_SPAWN, opIndex), asCALL_THISCALL);
+  ScriptEngine->RegisterObjectMethod("BackgroundArray",  "const Background &opIndex(uint x) const", asMETHOD(AISCRIPT_ARRAY_BACKGROUND, opIndex), asCALL_THISCALL);
+  ScriptEngine->RegisterObjectMethod("LayerArray",       "const Layer &opIndex(uint x) const",      asMETHOD(AISCRIPT_ARRAY_LAYER, opIndex), asCALL_THISCALL);
 
   ScriptEngine->RegisterObjectMethod("Info", "int opAssign(int object_num)",         asMETHODPR(AISCRIPT_INFO, operator=,  (int32 object_num), int32), asCALL_THISCALL);
   ScriptEngine->RegisterObjectMethod("Info", "int opAssign(const Info &in info)",    asMETHODPR(AISCRIPT_INFO, operator=,  (statics AISCRIPT_INFO &info), int32), asCALL_THISCALL);
@@ -970,18 +1349,18 @@
   ScriptEngine->RegisterGlobalProperty(      "Info target", &target);
   ScriptEngine->RegisterGlobalProperty("const Game game",   game);
 
-  ScriptEngine->RegisterGlobalProperty("const int  mode",                &mode);
-  ScriptEngine->RegisterGlobalProperty("const int  difficulty",          &difficulty);
-  ScriptEngine->RegisterGlobalProperty("const int  elapsed_time",        &elapsed_time);
-  ScriptEngine->RegisterGlobalProperty("const int  background",          &background);
-  ScriptEngine->RegisterGlobalProperty("const int  bg_width",            &bg_width);
-  ScriptEngine->RegisterGlobalProperty("const int  bg_zwidth1",          &bg_zwidth1);
-  ScriptEngine->RegisterGlobalProperty("const int  bg_zwidth2",          &bg_zwidth2);
-  ScriptEngine->RegisterGlobalProperty("const int  stage_bound",         &stage_bound);
-  ScriptEngine->RegisterGlobalProperty("const bool stage_clear",         &stage_clear);
-  ScriptEngine->RegisterGlobalProperty("const int  current_phase",       &current_phase);
-  ScriptEngine->RegisterGlobalProperty("const int  current_phase_count", &current_phase_count);
-  ScriptEngine->RegisterGlobalProperty("const int  current_stage",       &current_stage);
+  ScriptEngine->RegisterGlobalProperty("const int32 mode",                &mode);
+  ScriptEngine->RegisterGlobalProperty("const int32 difficulty",          &difficulty);
+  ScriptEngine->RegisterGlobalProperty("const int32 elapsed_time",        &elapsed_time);
+  ScriptEngine->RegisterGlobalProperty("const int32 background",          &background);
+  ScriptEngine->RegisterGlobalProperty("const int32 bg_width",            &bg_width);
+  ScriptEngine->RegisterGlobalProperty("const int32 bg_zwidth1",          &bg_zwidth1);
+  ScriptEngine->RegisterGlobalProperty("const int32 bg_zwidth2",          &bg_zwidth2);
+  ScriptEngine->RegisterGlobalProperty("const int32 stage_bound",         &stage_bound);
+  ScriptEngine->RegisterGlobalProperty("const bool  stage_clear",         &stage_clear);
+  ScriptEngine->RegisterGlobalProperty("const int32current_phase",       &current_phase);
+  ScriptEngine->RegisterGlobalProperty("const int32current_phase_count", &current_phase_count);
+  ScriptEngine->RegisterGlobalProperty("const int32current_stage",       &current_stage);
   
   ScriptEngine->RegisterGlobalFunction("void print(bool p)",             asFUNCTIONPR(print, (int1 p),   int0), asCALL_CDECL);
   ScriptEngine->RegisterGlobalFunction("void print(int8 p)",             asFUNCTIONPR(print, (int8 p),   int0), asCALL_CDECL);
@@ -1105,6 +1484,7 @@
    statics string Temp03 = Temp02.path().string(); if(Temp03.size() < Temp01.size() + 5) continue;
    statics string Temp04 = L_Lowercase(string(Temp03, Temp01.size() + 1, Temp03.size() - (Temp01.size() + 1)));
 
+   if(Temp04 == "ai.as") goto Labl02;
    if(string(Temp04, Temp04.size() - 3, 3) != ".as") continue;
    if(Temp04.at(0) == '_') goto Labl01;
    if(Temp04.at(0) == '0') if(Temp04 != "0.as") continue;
@@ -1123,7 +1503,7 @@
    {
     #ifdef AISCRIPT_DEBUG
 	 std::time_t Time01 = 0; struct stat Stat01; if(stat(Temp03.c_str(), &Stat01) == 0) Time01 = Stat01.st_mtime;
-     Maps0001.insert(std::pair < int32, std::time_t > (L_Numbering(string(Temp04, 0, Temp04.size() - 3)), Time01));
+     Maps0001.insert(std::pair < int32, std::time_t > (Temp04 == "ai.as" ? (-1) : (L_Numbering(string(Temp04, 0, Temp04.size() - 3))), Time01));
     #endif
      
 	CScriptBuilder Builder;
@@ -1155,6 +1535,7 @@
 	#ifdef AISCRIPT_DEBUG
      ScriptEngine->WriteMessage(Temp04.c_str(), 0, 0, asMSGTYPE_INFORMATION, "Successfully build.");
 	#endif
+    if(Temp04 == "ai.as") full_script = true;
    }
    continue;
   }

@@ -42,10 +42,90 @@
    int32 row[10];
    int32 col[10];
   } AISCRIPT_GAME_FILE_DATA_FILE;
+  typedef struct AISCRIPT_GAME_FILE_DATA_FRAME_BPOINT
+  {
+   int32 x;
+   int32 y;
+  } AISCRIPT_GAME_FILE_DATA_FRAME_BPOINT;
+  typedef struct AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT
+  {
+   int32 kind;
+   int32 x;
+   int32 y;
+   int32 injury; //if its kind 2 this is fronthurtact
+   int32 cover; // if its kind 2 this is backhurtact
+   int32 vaction;
+   int32 aaction;
+   int32 jaction;
+   int32 daction;
+   int32 throwvx;
+   int32 throwvy;
+   int32 hurtable;
+   int32 decrease;
+   int32 dircontrol;
+   int32 taction;
+   int32 throwinjury;
+   int32 throwvz;
+  } AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT;
+  typedef struct AISCRIPT_GAME_FILE_DATA_FRAME_WPOINT
+  {
+   int32 kind;
+   int32 x;
+   int32 y;
+   int32 weaponact;
+   int32 attacking;
+   int32 cover;
+   int32 dvx;
+   int32 dvy;
+   int32 dvz;
+  } AISCRIPT_GAME_FILE_DATA_FRAME_WPOINT;
+  typedef struct AISCRIPT_GAME_FILE_DATA_FRAME_OPOINT
+  {
+   int32 kind;
+   int32 x;
+   int32 y;
+   int32 action;
+   int32 dvx;
+   int32 dvy;
+   int32 oid;
+   int32 facing;
+  } AISCRIPT_GAME_FILE_DATA_FRAME_OPOINT;
   typedef struct AISCRIPT_GAME_FILE_DATA_FRAME_ITR
-  {} AISCRIPT_GAME_FILE_DATA_FRAME_ITR;
+  {
+   int32 kind;
+   int32 x;
+   int32 y;
+   int32 w;
+   int32 h;
+   int32 dvx;
+   int32 dvy;
+   int32 fall;
+   int32 arest;
+   int32 vrest;
+   int32 respond;
+   int32 effect;
+   int32 catchingact1;
+   int32 catchingact2;
+   int32 caughtact1;
+   int32 caughtact2;
+   int32 bdefend;
+   int32 injury;
+   int32 zwidth;
+   int32 unkwn1;
+  } AISCRIPT_GAME_FILE_DATA_FRAME_ITR;
   typedef struct AISCRIPT_GAME_FILE_DATA_FRAME_BDY
-  {} AISCRIPT_GAME_FILE_DATA_FRAME_BDY;
+  {
+   int32 kind;
+   int32 x;
+   int32 y;
+   int32 w;
+   int32 h;
+   int32 unkwn1;
+   int32 unkwn2;
+   int32 unkwn3;
+   int32 unkwn4;
+   int32 unkwn5;
+  } AISCRIPT_GAME_FILE_DATA_FRAME_BDY;
   typedef struct AISCRIPT_GAME_FILE_DATA_FRAME
   {
    int8  exists;
@@ -70,6 +150,52 @@
    int32 mp;
    int32 centerx;
    int32 centery;
+   
+   AISCRIPT_GAME_FILE_DATA_FRAME_OPOINT opoint;
+
+   int32 unkwn2;
+   int32 unkwn3;
+
+   AISCRIPT_GAME_FILE_DATA_FRAME_BPOINT bpoint;
+   AISCRIPT_GAME_FILE_DATA_FRAME_CPOINT cpoint;
+   
+   int32 unkwn4;
+   int32 unkwn5;
+   int32 unkwn6;
+   
+   AISCRIPT_GAME_FILE_DATA_FRAME_WPOINT wpoint;
+   
+   int32 unkwn7;
+   int32 unkwn8;
+   int32 unkwn9;
+   int32 unkwn10;
+   int32 unkwn11;
+   int32 unkwn12;
+   int32 unkwn13;
+   int32 unkwn14;
+   int32 unkwn15;
+   int32 unkwn16;
+   int32 unkwn17;
+   int32 itr_count;
+   int32 bdy_count;
+
+   AISCRIPT_GAME_FILE_DATA_FRAME_ITR *itrs;
+   AISCRIPT_GAME_FILE_DATA_FRAME_BDY *bdys;
+	
+   //vv these values form a rectangle that holds all itrs/bdys within it
+   int32 itr_x;
+   int32 itr_y;
+   int32 itr_w;
+   int32 itr_h;
+   int32 bdy_x;
+   int32 bdy_y;
+   int32 bdy_w;
+   int32 bdy_h;
+	
+   int32 unkwn18;
+   int8  fname[20];
+   int8  (*sound)[20];
+   int32 unkwn19;
   } AISCRIPT_GAME_FILE_DATA_FRAME;
   typedef struct AISCRIPT_GAME_FILE_DATA
   {
@@ -98,9 +224,9 @@
 
    AISCRIPT_GAME_FILE_DATA_STRENGTH strength;
 
-   int32  file_count;                    // This is just a redudant, changing it won't affect anything.
-   int8   file_address[10][40];          // This is just a redudant, changing it won't affect anything.
-   AISCRIPT_GAME_FILE_DATA_FILE file[1]; // This is just a redudant, changing it won't affect anything.
+   int32  file_count;                     // This is just a redudant, changing it won't affect anything.
+   int8   file_address[10][40];           // This is just a redudant, changing it won't affect anything.
+   AISCRIPT_GAME_FILE_DATA_FILE file[1];  // This is just a redudant, changing it won't affect anything.
 
    int32  id;
    int32  type;
@@ -115,12 +241,35 @@
    int8   name[12];
   } AISCRIPT_GAME_FILE_DATA;
   typedef struct AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN
-  {} AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN;
+  {
+   int8   unkwn1[172]; // Seems to have something to do with bosses, is changed during game so I believe it keeps track of whether or not soldiers should respawn.
+   int32  id;
+   int32  x;
+   int32  hp;
+   int32  times;
+   int32  reserve;
+   int32  join;
+   int32  join_reserve;
+   int32  act;
+   int32  y;
+   xint64 ratio;
+   int32  role;       // 0 = Normal; 1 = "soldier"; 2 = "boss".
+   int8   unkwn2[4];
+  } AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN;
   typedef struct AISCRIPT_GAME_FILE_STAGE_PHASE
-  {} AISCRIPT_GAME_FILE_STAGE_PHASE;
+  {
+   int32 bound;
+   int8  music[52];
+
+   AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN spawns[60];
+
+   int32 when_clear_goto_phase;
+  } AISCRIPT_GAME_FILE_STAGE_PHASE;
   typedef struct AISCRIPT_GAME_FILE_STAGE
   {
-   
+   int32 phase_count;
+
+   AISCRIPT_GAME_FILE_STAGE_PHASE phases[100];
   } AISCRIPT_GAME_FILE_STAGE;
   typedef struct AISCRIPT_GAME_FILE_BACKGROUND_LAYER
   {
@@ -275,7 +424,7 @@
    int32  total_attack;      // Summary - Damage Dealt     | Value
    int32  hp_lost;           // Summary - Damage Taken     | Value
    int32  mp_usage;          // Summary - Mana Point Usage | Value
-   int32  unkwn15;           // Summary - Host             | ObjNum
+   int32  host;              // Summary - Host             | ObjNum
    int32  kills;             // Summary - Total Kill       | Value
    int32  weapon_picks;      // Summary - Total Pick       | Value
    int32  enemy;             // Target                     | ObjNum
@@ -348,7 +497,7 @@
 
    struct AISCRIPT_ARRAY_OBJECT     {AISCRIPT_GAME_OBJECT                   *opIndex(uint32) perfect;};
    struct AISCRIPT_ARRAY_DATA       {AISCRIPT_GAME_FILE_DATA                *opIndex(uint32) perfect;};
-   struct AISCRIPT_ARRAY_FILE       {AISCRIPT_GAME_FILE                     *opIndex(uint32) perfect;};
+   struct AISCRIPT_ARRAY_FILE       {AISCRIPT_GAME_FILE_DATA_FILE           *opIndex(uint32) perfect;};
    struct AISCRIPT_ARRAY_ENTRY      {AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY *opIndex(uint32) perfect;};
    struct AISCRIPT_ARRAY_FRAME      {AISCRIPT_GAME_FILE_DATA_FRAME          *opIndex(uint32) perfect;};
    struct AISCRIPT_ARRAY_ITR        {AISCRIPT_GAME_FILE_DATA_FRAME_ITR      *opIndex(uint32) perfect;};
@@ -360,14 +509,14 @@
    struct AISCRIPT_ARRAY_SPAWN      {AISCRIPT_GAME_FILE_STAGE_PHASE_SPAWN   *opIndex(uint32) perfect;};
 
    #pragma warning (disable : 26481) // We're safe to access any offset in this case.
-   template < int32 Vrab01 > int0                *Property(int0 *Vrab02)                            perfect {return (int0*)((int8*)Vrab02 + Vrab01);} // AngelScript does not support offsets larger than 0x7fff, and when that is the case, we use this function instead.
+   template < int32 Vrab01 > int0                *Index(int0 *Vrab02)                               perfect {return (int0*)((int8*)Vrab02 + Vrab01);} // AngelScript does not support offsets larger than 0x7fff, and when that is the case, we use this function instead.
    int1                                          *AISCRIPT_ARRAY_INT1::opIndex(uint32 Vrab01)       perfect {return (((int1*)this) + Vrab01);}
    int8                                          *AISCRIPT_ARRAY_INT8::opIndex(uint32 Vrab01)       perfect {return (((int8*)this) + Vrab01);}
    int32                                         *AISCRIPT_ARRAY_INT32::opIndex(uint32 Vrab01)      perfect {return (((int32*)this) + Vrab01);}
    template < int32 Vrab01 > AISCRIPT_ARRAY_INT8 *AISCRIPT_ARRAY_ARRAY_INT8::opIndex(uint32 Vrab02) perfect {return (AISCRIPT_ARRAY_INT8*)(((int8*)this) + (Vrab02 * Vrab01));}
    AISCRIPT_GAME_OBJECT                          *AISCRIPT_ARRAY_OBJECT::opIndex(uint32 Vrab01)     perfect {return *(((AISCRIPT_GAME_OBJECT**)this) + Vrab01);}
    AISCRIPT_GAME_FILE_DATA                       *AISCRIPT_ARRAY_DATA::opIndex(uint32 Vrab01)       perfect {return *(((AISCRIPT_GAME_FILE_DATA**)this) + Vrab01);}
-   AISCRIPT_GAME_FILE                            *AISCRIPT_ARRAY_FILE::opIndex(uint32 Vrab01)       perfect {return (AISCRIPT_GAME_FILE*)(((int32*)this) + Vrab01);}
+   AISCRIPT_GAME_FILE_DATA_FILE                  *AISCRIPT_ARRAY_FILE::opIndex(uint32 Vrab01)       perfect {return (AISCRIPT_GAME_FILE_DATA_FILE*)(((int32*)this) + Vrab01);}
    AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY        *AISCRIPT_ARRAY_ENTRY::opIndex(uint32 Vrab01)      perfect {return ((AISCRIPT_GAME_FILE_DATA_STRENGTH_ENTRY*)this) + Vrab01;}
    AISCRIPT_GAME_FILE_DATA_FRAME                 *AISCRIPT_ARRAY_FRAME::opIndex(uint32 Vrab01)      perfect {return ((AISCRIPT_GAME_FILE_DATA_FRAME*)this) + Vrab01;}
    AISCRIPT_GAME_FILE_DATA_FRAME_ITR             *AISCRIPT_ARRAY_ITR::opIndex(uint32 Vrab01)        perfect {return ((AISCRIPT_GAME_FILE_DATA_FRAME_ITR*)this) + Vrab01;}
